@@ -286,11 +286,12 @@ class MovementScheduler(deque):
             dictionary    = item[1]
             newFunction   = newitem[0]
             newDictionary = newitem[1]
-            if function == newFunction:
+            if function == newFunction and dictionary == newDictionary:
                 try:
                     if dictionary['hj'] == newDictionary['hj']:
                         # two functions operating on the same hj not allowed
                         #两个函数都是操控同一个铰链关节是不允许的。（假如在多线程的情况下是不是可以？，难道非要把一整套的关节弄好输入到新的字典中？
+                        # self.clear()
                         raise SchedulerConflict('The function "{}" is already in the queue.'.format(item[0]))
                 except KeyError:
                     SchedulerConflict.resue_socket_addr(host=3100)
@@ -307,6 +308,7 @@ class MovementScheduler(deque):
         Reschedule if they are not done"""
 
         for i in range(len(self)):
+
             item     = self.popleft()
             function = item[0]
             argDict  = item[1]

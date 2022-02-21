@@ -1,9 +1,39 @@
 #!usr/bin/env python3
 from Agent import *
 from Action import *
+import time
 import matplotlib
 if __name__ == '__main__':
-     TestAction = Action(8,'lamour','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.9,0])
+    TestAction = Action(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.9,0])
+    # TestAction.Test_step_by_left_foot()
+    time.sleep(1)
+    print("Now moving")
+    TestAction.move_right_shoulder_pitch_to(40)
+    TestAction.move_left_shoulder_pitch_to(10)
+
+    TestAction.move_right_shoulder_yaw_to(0)
+    TestAction.move_right_shoulder_roll_to(100.0)
+
+    time.sleep(2)
+    print("starting")
+    while True:
+
+        print("running")
+        time.sleep(1)
+        TestAction.move_right_arm_yaw_to(100)
+        TestAction.move_right_shoulder_yaw_to(0)
+        time.sleep(1)
+        TestAction.move_right_arm_yaw_to(0)
+        TestAction.move_right_shoulder_yaw_to(10)
+    # TestAction.move_right_arm_yaw_to(30)
+    # TestAction.
+    # while True:s
+    #     move = int(input("move??"))
+    #     TestAction.Test_move_hj_to(move)
+    #     time.sleep(3)
+        # TestAction.Test_move_hj_to(-move) 
+
+
     # Test =(NaoRobot(7,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 2', startCoordinates=[-4.5, 0.0, 0]))
 
     #Test Agent.py Use Dict To Easy Init Agent
@@ -68,9 +98,9 @@ if __name__ == '__main__':
       # TestAction.Test_step_by_right_knee()
       # TestAction.Test_Walk()
       # TestAction.Test_step_by_right_foot()
-      # TestAction.Test_step_by_left_foot()
+        # TestAction.Test_step_by_left_foot()
       # TestAction.Test_to()
-     TestAction.Test_Walk()
+    #  TestAction.Test_Walk()
      # for testl in range(hjMin['llj3'],hjMax['llj3']):
      #     print("llj3",testl)
      #     testl += 1

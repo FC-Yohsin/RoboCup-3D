@@ -291,7 +291,6 @@ class MovementScheduler(deque):
                     if dictionary['hj'] == newDictionary['hj']:
                         # two functions operating on the same hj not allowed
                         #两个函数都是操控同一个铰链关节是不允许的。（假如在多线程的情况下是不是可以？，难道非要把一整套的关节弄好输入到新的字典中？
-                        # self.clear()
                         raise SchedulerConflict('The function "{}" is already in the queue.'.format(item[0]))
                 except KeyError:
                     SchedulerConflict.resue_socket_addr(host=3100)
@@ -299,7 +298,7 @@ class MovementScheduler(deque):
 
 
 
-        super().append(newitem) 
+        super().append(newitem)
 
 # ==================================== #
 
@@ -551,7 +550,7 @@ class NaoRobot(object):
         self.alive         = False
         self.realstarttime = None # starttime of robot
         self.simstarttime  = None 
-
+        self.counter = 0
         # set maximum hinge effector speed
         self.maxhjSpeed = 7.035
 
@@ -784,23 +783,43 @@ class NaoRobot(object):
             return
 
         self.alive = True
-
         startSkippingNumber = 10
+        print(self.perceive())
 
         iteration         = -1
         skippedIterations =  0
         while self.alive:
             iteration += 1
+            self.counter += 1
 
-            if self.check_sync() >= startSkippingNumber:
-                while self.check_sync() > 2:
-#                    print(self.check_sync())
-                    self.perceive(skip=True)
-                    iteration         += 1
-                    skippedIterations += 1 
+#             if self.check_sync() >= startSkippingNumber:
+#                 while self.check_sync() > 2:
+# #                    print(self.check_sync())
+#                     self.perceive(skip=True)
+#                     print("from another perc: {}".format(self.counter))
+#                     iteration         += 1
+#                     skippedIterations += 1 
 
             self.perceive()
-            self.msched.run()
+            self.think()
+            # if self.counter <= 10:
+            #     self.move_hj_to(hj='raj1', percent=0, speed=30)
+            # elif self.counter > 100:
+            #     self.move_hj_to(hj='raj1', percent=50, speed=30)
+            #     self.move_hj_to(hj="rlj3", percent=100, speed=70)
+            # if self.counter >= 150: 
+            #     if self.counter >= 180:
+            #         self.move_hj_to(hj='raj1', percent=0, speed=30)
+            #         self.move_hj_to(hj='raj2', percent=0, speed=30)
+            #         self.move_hj_to(hj='raj3', percent=0, speed=30)
+            #         self.move_hj_to(hj='raj4', percent=0, speed=30)
+            #         self.move_hj_to(hj='rlj3', percent=0, speed=30)
+            #         self.move_hj_to(hj='laj1', percent=0, speed=30)
+            #         self.move_hj_to(hj='laj2', percent=0, speed=30)
+            #         self.move_hj_to(hj='laj3', percent=0, speed=30)
+            #         self.move_hj_to(hj='llj3', percent=0, speed=30)
+
+            
 
 
             if iteration * CYCLE_LENGTH % 3.0 == 0:
@@ -814,6 +833,50 @@ class NaoRobot(object):
 
 
 # ==================================== #
+
+    def think(self):
+
+        """
+        Waving Hands Posture
+        """
+        # if self.counter <= 100:
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["raj2"], rate=-1.5)
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["raj3"], rate=1.5)
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["laj2"], rate=1.5)
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["laj3"], rate=-1.5)
+
+        # elif self.counter > 100 and self.counter <= 140:
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["raj4"], rate=4)
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["laj4"], rate=-4)
+
+        # elif self.counter >= 141 and self.counter < 160:
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["raj4"], rate=-4)
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["laj4"], rate=4)
+
+        # elif self.counter >= 160:
+        #     self.counter = 101
+
+        """
+        Falling Down on back
+        """
+        if self.counter <= 100:
+            self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=-1.5)
+
+
+        """
+        Standing up from back
+        """
+        if self.counter > 100 and self.counter <= 111:
+            self.move_hj_to(hj="rlj5", percent=0, speed=30)
+            # self.pns.hinge_joint_effector(name=self.hjEffector["raj1"], rate=1.5)
+            self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=0.1)
+
+
+
+
+
+# ==================================== #
+
 
     def die(self, timeout=0):
         """Stop robot execution and close socket connection to server
@@ -881,7 +944,7 @@ class NaoRobot(object):
                     if field[0] == 'F1L':
                         # self.vision[perceptor[1][1]].setFlag(perceptor[2][1:])
                         #上面这种写法竟然是错的，虽然逻辑是相同的，但是提示unhashable list,don't know why
-                        self.vision['F1L'].setFlag(perceptor[2][1:])
+                        self.vision['F1L'].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'F2L':
                         self.vision['F2L'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
@@ -935,6 +998,7 @@ class NaoRobot(object):
                 if self.debugLevel >= 10:
                     print("DEBUG: unknown perceptor: {}".format(perceptor[0]))
                     print(perceptor)
+            
          
 # ==================================== #
 

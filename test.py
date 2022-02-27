@@ -4,34 +4,63 @@ from Action import *
 import time
 import matplotlib
 if __name__ == '__main__':
-    TestAction = Action(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.9,0])
+    Player8 = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.9,0],debugLevel=0)
     # TestAction.Test_step_by_left_foot()
     time.sleep(1)
     print("Now moving")
-    TestAction.move_right_shoulder_pitch_to(40)
-    TestAction.move_left_shoulder_pitch_to(10)
+    
+    # TestAction.move_hj_to(hj='raj1', percent=45, speed=25)
+    # TestAction.move_hj_to(hj='raj1', percent=0, speed=25)
 
-    TestAction.move_right_shoulder_yaw_to(0)
-    TestAction.move_right_shoulder_roll_to(100.0)
+    # TestAction.move_right_shoulder_pitch_to(40)
+    # TestAction.move_right_shoulder_pitch_to(0)
+    # TestAction.move_right_shoulder_pitch_to(40)
+    # TestAction.move_left_shoulder_pitch_to(10)
+    # TestAction.move_right_shoulder_pitch_to(0)
+    # TestAction.move_left_shoulder_pitch_to(60)
 
-    time.sleep(2)
-    print("starting")
-    while True:
 
-        print("running")
-        time.sleep(1)
-        TestAction.move_right_arm_yaw_to(100)
-        TestAction.move_right_shoulder_yaw_to(0)
-        time.sleep(1)
-        TestAction.move_right_arm_yaw_to(0)
-        TestAction.move_right_shoulder_yaw_to(10)
+
+    # TestAction.move_right_shoulder_yaw_to(0)
+    # TestAction.move_right_shoulder_roll_to(100.0)
+
+    # time.sleep(2)
+    # print("starting")
+    # while True:
+
+    # print("running")
+    # # time.sleep(1)
+    # TestAction.move_right_arm_yaw_to(100)
+    # TestAction.move_right_shoulder_yaw_to(0)
+    # # time.sleep(1)
+    # TestAction.move_right_arm_yaw_to(0)
+    # TestAction.move_right_shoulder_yaw_to(10)
+    # print("done")
+    # # time.sleep(1)
+    # print("running")
+    # TestAction.move_right_arm_yaw_to(100)
+    # TestAction.move_right_shoulder_yaw_to(0)
+    # # time.sleep(1)
+    # TestAction.move_right_arm_yaw_to(0)
+    # TestAction.move_right_shoulder_yaw_to(10)
+    # print("done")
+    # print("running")
+    # # time.sleep(1)
+    # TestAction.move_right_arm_yaw_to(100)
+    # TestAction.move_right_shoulder_yaw_to(0)
+    # # time.sleep(1)
+    # TestAction.move_right_arm_yaw_to(0)
+    # TestAction.move_right_shoulder_yaw_to(10)
+    # print("done")
+    # time.sleep(1)
+
     # TestAction.move_right_arm_yaw_to(30)
     # TestAction.
-    # while True:s
+    # while True:
     #     move = int(input("move??"))
     #     TestAction.Test_move_hj_to(move)
     #     time.sleep(3)
-        # TestAction.Test_move_hj_to(-move) 
+    #     TestAction.Test_move_hj_to(-move) 
 
 
     # Test =(NaoRobot(7,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 2', startCoordinates=[-4.5, 0.0, 0]))

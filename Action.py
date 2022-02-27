@@ -1,6 +1,6 @@
 #!usr/bin/env python3
 
-from Agent import *
+from Agent import NaoRobot
 from World import *
 import numpy as np
 
@@ -108,24 +108,24 @@ class Action(NaoRobot):
 
     def move_right_shoulder_pitch_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'raj1', 'speed': 45, 'percent': percnt}])
-        self.msched.run()
+        # self.msched.run()
 
     def move_left_shoulder_pitch_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'laj1', 'speed': 45, 'percent': percnt}])
-        self.msched.run()
+        # self.msched.run()
 
 
     def move_right_shoulder_yaw_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'raj2', 'speed': 45, 'percent': percnt}])
-        self.msched.run()
+        # self.msched.run()
 
     def move_left_shoulder_yaw_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'laj2', 'speed': 45, 'percent': percnt}])
-        self.msched.run()
+        # self.msched.run()
 
     def move_right_shoulder_roll_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'raj3', 'speed': 45, 'percent': percnt}])
-        self.msched.run()
+        # self.msched.run()
     
     def move_left_shoulder_roll_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'laj3', 'speed': 45, 'percent': percnt}])
@@ -133,11 +133,11 @@ class Action(NaoRobot):
 
     def move_right_arm_yaw_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'raj4', 'speed': 45, 'percent': percnt}])
-        self.msched.run()
+        # self.msched.run()
 
     def move_right_hip_roll_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'rlj2', 'speed': 45, 'percent': percnt}])
-        self.msched.run()
+        # self.msched.run()
 
     def move_right_hip_yawpitch_to(self, percnt: int):
         self.msched.append([self.move_hj_to, {'hj': 'rlj1', 'speed': 45, 'percent': percnt}])

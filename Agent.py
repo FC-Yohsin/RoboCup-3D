@@ -760,6 +760,7 @@ class NaoRobot(object):
         self.pns.beam_effector(startCoordinates[0], startCoordinates[1], startCoordinates[2])
 
         # set default hing joint angles设置默认的铰链关节角度
+        
         for hj in self.hjDefault.keys():
             self.hjDefault[hj] = self.get_hj(hj)
 
@@ -801,6 +802,8 @@ class NaoRobot(object):
 #                     skippedIterations += 1 
 
             self.perceive()
+            # print(self.pns.receive_perceptors())
+            # break
             self.think()
             # if self.counter <= 10:
             #     self.move_hj_to(hj='raj1', percent=0, speed=30)
@@ -859,23 +862,51 @@ class NaoRobot(object):
         """
         Falling Down on back
         """
-        if self.counter <= 100:
-            self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=-1.5)
+        # if self.counter <= 100:
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=-1.5)
+        self.moveJointByAngle("raj1", angle=-90, speed=2)
+        self.moveJointByAngle("laj1", angle=-90, speed=2)
 
 
         """
         Standing up from back
         """
-        if self.counter > 100 and self.counter <= 111:
-            self.move_hj_to(hj="rlj5", percent=0, speed=30)
-            # self.pns.hinge_joint_effector(name=self.hjEffector["raj1"], rate=1.5)
-            self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=0.1)
+        # if self.counter > 100 and self.counter <= 120:
+        #     self.move_hj_to(hj="rlj5", percent=0, speed=30)
+        #     # self.pns.hinge_joint_effector(name=self.hjEffector["raj1"], rate=1.5)
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=1.5)
+        # if self.counter > 120 and self.counter < 122: 
+        #     self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=0)
+        #     print(self.pns.receive_perceptors())
 
+# ==================================== #
+
+
+    def moveJointByAngle(self, name: str, angle: float, speed: float):
+        currentAngle = self.hj[name]
+        speed = abs(speed)
+
+        if currentAngle >= self.hjMax[name]:
+            currentAngle = self.hjMax[name]
+        elif currentAngle <= self.hjMin[name]:
+            currentAngle = self.hjMin[name]
+        
+        if angle > 0:
+            if currentAngle < angle:
+                self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=speed)
+            elif currentAngle >= angle:
+                self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=0)
+        else:
+            if currentAngle > angle:
+                self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=-speed)
+            elif currentAngle <= angle:
+                self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=0)
 
 
 
 
 # ==================================== #
+
 
 
     def die(self, timeout=0):

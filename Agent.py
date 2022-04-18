@@ -1,12 +1,16 @@
 #! /usr/bin/env python3
 
 
+from cgitb import reset
 import sys, time, math
 import threading
 import socket, struct
+from xml.dom.pulldom import default_bufsize
+from matplotlib.pyplot import axis
 import numpy as np
 from collections import deque
 from World import *
+import os
 
 
 # ============================================================================ #
@@ -110,7 +114,10 @@ class PNS(object):
         while (len(message) < length):
             nextBytes = self.socket.recv(length - len(message))
             if (nextBytes == ''):
-                raise OSError('Socket to simulation server was closed')
+                # raise OSError('Socket to simulation server was closed')
+                print("Socket to simulation server was closed")
+                print("Starting Server Again...") # code for Optimization
+                os.system('rcssserver3d')
             else:
                 message += nextBytes
  
@@ -415,7 +422,7 @@ class Gyroscope(object):
         return self.rate
 
     def get_orientation(self):
-        return self.x, self.y, self.z
+        return np.array([self.x, self.y, self.z])
     
 
 # ============================================================================ #
@@ -423,7 +430,7 @@ class Gyroscope(object):
 
 class Accelerometer(object):
     """Accelerometer to measure the acceleration relative to free fall
-    Will therefore indicate 1g = 9.81m/s at rest in positive z direction
+    Will therefore indica]te 1g = 9.81m/s at rest in positive z direction
     计算相对于自由落体的加速度，因此以9.81m/s 在z轴正方向
     """
 
@@ -539,7 +546,7 @@ class NaoRobot(object):
     机器人的实现"""
 
     def __init__(self, agentID, teamname, host='localhost', port=3100, model='', debugLevel=0,
-            startCoordinates=[-0.5, 0, 0]): 
+            startCoordinates=[-0.5, 0, 0], walk_gain=4.0): 
 
         self.agentID       = agentID
         self.teamname      = teamname
@@ -551,6 +558,7 @@ class NaoRobot(object):
         self.realstarttime = None # starttime of robot
         self.simstarttime  = None 
         self.counter = 0
+        self.walk_gain = walk_gain
         # set maximum hinge effector speed
         self.maxhjSpeed = 7.035
 
@@ -744,22 +752,23 @@ class NaoRobot(object):
                            'llj5': 0.0,
                            'llj6': 0.0,}
 
+        self.walk_config = {
+                            "rlj1":[-12,-11],
+                            "llj1":[-11,-12],
+                            "rlj3":[40.4,15],
+                            "rlj4":[-55,-45],
+                            "rlj5":[13,30],
+                            "llj3":[15,40.4],
+                            "llj4":[-45,-55],
+                            "llj5":[30,13],
+                            "rlj6":[-4,1],
+                            "llj6":[-1,4]}
 
-
-
- 
-        # create peripheral nervous system (server communication)
-        #创建PNS
-        #def __init__(self, agentID, teamname, host='localhost', port=3100,
-        #    model='rsg/agent/nao/nao.rsg', debugLevel=10):
 
         self.pns = PNS(self.agentID, self.teamname,
                 host=self.host, port=self.port, model=self.model, debugLevel=self.debugLevel)
-        #因为球员平台对类型的要求较多，所以，需要修改model作为参数传入
         self.perceive()
         self.pns.beam_effector(startCoordinates[0], startCoordinates[1], startCoordinates[2])
-
-        # set default hing joint angles设置默认的铰链关节角度
         
         for hj in self.hjDefault.keys():
             self.hjDefault[hj] = self.get_hj(hj)
@@ -767,13 +776,19 @@ class NaoRobot(object):
         self.lifeThread = threading.Thread(target=self.live)                #难道要直接在类里面使用？
         self.lifeThread.start()
 
-        #percent的存在使得对不同球员来讲，调好一个智能体的角度之后，可以使用其百分比应用于不同类型
-        # put arms down
-       # self.msched.append([self.move_hj_to, {'hj': 'raj1', 'speed': 25, 'percent': 10}])
-       # self.msched.append([self.move_hj_to, {'hj': 'laj1', 'speed': 25, 'percent': 10}])
+        self.change_in_gyr = np.zeros((3,3))
+        self.orientations_hist = np.array([[0,0,0]])
+
 
 
 # ==================================== #
+
+    # tuning walking parameters
+    def set_walk_config(self, config):
+        self.walk_config = config
+
+# ==================================== #
+
 
     def live(self):
         """Start the robot"""
@@ -802,28 +817,7 @@ class NaoRobot(object):
 #                     skippedIterations += 1 
 
             self.perceive()
-            # print(self.pns.receive_perceptors())
-            # break
             self.think()
-            # if self.counter <= 10:
-            #     self.move_hj_to(hj='raj1', percent=0, speed=30)
-            # elif self.counter > 100:
-            #     self.move_hj_to(hj='raj1', percent=50, speed=30)
-            #     self.move_hj_to(hj="rlj3", percent=100, speed=70)
-            # if self.counter >= 150: 
-            #     if self.counter >= 180:
-            #         self.move_hj_to(hj='raj1', percent=0, speed=30)
-            #         self.move_hj_to(hj='raj2', percent=0, speed=30)
-            #         self.move_hj_to(hj='raj3', percent=0, speed=30)
-            #         self.move_hj_to(hj='raj4', percent=0, speed=30)
-            #         self.move_hj_to(hj='rlj3', percent=0, speed=30)
-            #         self.move_hj_to(hj='laj1', percent=0, speed=30)
-            #         self.move_hj_to(hj='laj2', percent=0, speed=30)
-            #         self.move_hj_to(hj='laj3', percent=0, speed=30)
-            #         self.move_hj_to(hj='llj3', percent=0, speed=30)
-
-            
-
 
             if iteration * CYCLE_LENGTH % 3.0 == 0:
 #                print("Robot {} lags {} cycles behind after {} iterations".format(self.agentID, self.check_sync(), iteration+1))
@@ -837,77 +831,257 @@ class NaoRobot(object):
 
 # ==================================== #
 
-    def think(self):
-
+    def calculate_gyr_fitness(self):
         """
-        Waving Hands Posture
+        This is a fitness calculation for the measuring the stability of Nao. We use 
+        the difference between the current orientation and the previous orientation.
         """
-        # if self.counter <= 100:
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["raj2"], rate=-1.5)
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["raj3"], rate=1.5)
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["laj2"], rate=1.5)
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["laj3"], rate=-1.5)
-
-        # elif self.counter > 100 and self.counter <= 140:
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["raj4"], rate=4)
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["laj4"], rate=-4)
-
-        # elif self.counter >= 141 and self.counter < 160:
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["raj4"], rate=-4)
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["laj4"], rate=4)
-
-        # elif self.counter >= 160:
-        #     self.counter = 101
-
-        """
-        Falling Down on back
-        """
-        # if self.counter <= 100:
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=-1.5)
-        self.moveJointByAngle("raj1", angle=-90, speed=2)
-        self.moveJointByAngle("laj1", angle=-90, speed=2)
-
-
-        """
-        Standing up from back
-        """
-        # if self.counter > 100 and self.counter <= 120:
-        #     self.move_hj_to(hj="rlj5", percent=0, speed=30)
-        #     # self.pns.hinge_joint_effector(name=self.hjEffector["raj1"], rate=1.5)
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=1.5)
-        # if self.counter > 120 and self.counter < 122: 
-        #     self.pns.hinge_joint_effector(name=self.hjEffector["rlj5"], rate=0)
-        #     print(self.pns.receive_perceptors())
+        x = np.mean(self.orientations_hist, axis=0)
+        x = np.mean(x, axis=0)
+        score_percent = ((1/x) * 100) * (100/6)
+        return score_percent
 
 # ==================================== #
 
+    def evaluating(self):
+        # maintaing track of gyroscope changes
+        self.change_in_gyr = (self.gyr.get_orientation()*100) - self.change_in_gyr
+        self.orientations_hist = np.abs(np.concatenate((self.orientations_hist, self.change_in_gyr), axis=0))
+
+
+# ==================================== #
+
+
+    def think(self):
+        self.evaluating()
+
+        if self.counter <= 80:
+            self.stand()
+        if self.counter > 80 and self.counter <= 120:
+            self.simpleWalk()
+        if self.counter > 120: 
+            self.counter = 80
+
+# ==================================== #
+    def simpleWalk(self):
+        gain = self.walk_gain
+        if self.counter > 80 and self.counter <= 104:
+
+            self.moveJointByAngle(
+                "rlj1",
+                self.walk_config["rlj1"][0], 
+                gain)
+            self.moveJointByAngle(
+                "llj1",
+                self.walk_config["llj1"][0], 
+                gain)
+
+            self.moveJointByAngle(
+                "rlj3",
+                self.walk_config["rlj3"][0], 
+                gain)
+            self.moveJointByAngle(
+                "rlj4",
+                self.walk_config["rlj4"][0], 
+                gain)
+            self.moveJointByAngle(
+                "rlj5",
+                self.walk_config["rlj5"][0], 
+                gain)
+
+            self.moveJointByAngle(
+                "llj3",
+                self.walk_config["llj3"][0], 
+                gain)
+            self.moveJointByAngle(
+                "llj4",
+                self.walk_config["llj4"][0], 
+                gain)
+            self.moveJointByAngle(
+                "llj5",
+                self.walk_config["llj5"][0], 
+                gain)
+
+            self.moveJointByAngle(
+                "rlj6", 
+                self.walk_config["rlj6"][0], 
+                gain)
+            self.moveJointByAngle(
+                "llj6", 
+                self.walk_config["llj6"][0], 
+                gain)
+
+
+        if self.counter > 95 and self.counter <= 120:
+
+            self.moveJointByAngle(
+                "rlj1",
+                self.walk_config["rlj1"][1], 
+                gain)
+            self.moveJointByAngle(
+                "llj1",
+                self.walk_config["llj1"][1], 
+                gain)
+
+            self.moveJointByAngle(
+                "rlj3",
+                self.walk_config["rlj3"][1], 
+                gain)
+            self.moveJointByAngle(
+                "rlj4",
+                self.walk_config["rlj4"][1], 
+                gain)
+            self.moveJointByAngle(
+                "rlj5",
+                self.walk_config["rlj5"][1], 
+                gain)
+
+            self.moveJointByAngle(
+                "llj3",
+                self.walk_config["llj3"][1], 
+                gain)
+            self.moveJointByAngle(
+                "llj4",
+                self.walk_config["llj4"][1], 
+                gain)
+            self.moveJointByAngle(
+                "llj5",
+                self.walk_config["llj5"][1], 
+                gain)
+
+            self.moveJointByAngle(
+                "rlj6", 
+                self.walk_config["rlj6"][1], 
+                gain)
+            self.moveJointByAngle(
+                "llj6", 
+                self.walk_config["llj6"][1], 
+                gain)
+
+
+    # def simpleWalk(self):
+    #     gain = 4
+    #     if self.counter > 80 and self.counter <= 104:
+
+    #         self.moveJointByAngle("rlj1",-12, gain)
+    #         self.moveJointByAngle("llj1",-11, gain)
+
+    #         self.moveJointByAngle("rlj3",40.4, gain)
+    #         self.moveJointByAngle("rlj4",-55, gain)
+    #         self.moveJointByAngle("rlj5",13, gain)
+
+    #         self.moveJointByAngle("llj3",15, gain)
+    #         self.moveJointByAngle("llj4",-45, gain)
+    #         self.moveJointByAngle("llj5",30, gain)
+
+    #         self.moveJointByAngle("rlj6", -4, gain)
+    #         self.moveJointByAngle("llj6", -1, gain)
+
+
+    #     if self.counter > 95 and self.counter <= 120:
+
+    #         self.moveJointByAngle("rlj1",-11, gain)
+    #         self.moveJointByAngle("llj1",-12, gain)
+
+    #         self.moveJointByAngle("llj3",40.4, gain)
+    #         self.moveJointByAngle("llj4",-55, gain)
+    #         self.moveJointByAngle("llj5",13, gain)
+
+    #         self.moveJointByAngle("rlj3",15, gain)
+    #         self.moveJointByAngle("rlj4",-45, gain)
+    #         self.moveJointByAngle("rlj5",30, gain)
+
+    #         self.moveJointByAngle("rlj6", 1, gain)
+    #         self.moveJointByAngle("llj6", 4, gain)
+
+
+
+            
+# ==================================== #
+
+
+    def stand(self):
+        gain = 3
+
+        self.moveJointByAngle('llj1', angle=0, speed=gain)
+        self.moveJointByAngle('rlj1', angle=0, speed=gain)
+
+        self.moveJointByAngle('llj2', angle=5, speed=gain)
+        self.moveJointByAngle('rlj2', angle=-5, speed=gain)
+
+        self.moveJointByAngle('llj3', angle=25, speed=gain)
+        self.moveJointByAngle('rlj3', angle=25, speed=gain)
+
+        self.moveJointByAngle('llj4', angle=-65, speed=gain)
+        self.moveJointByAngle('rlj4', angle=-65, speed=gain)
+
+        self.moveJointByAngle('llj5', angle=36, speed=gain)
+        self.moveJointByAngle('rlj5', angle=36, speed=gain)
+
+        self.moveJointByAngle('llj6', angle=-1, speed=gain)
+        self.moveJointByAngle('rlj6', angle=1, speed=gain)
+
+        self.moveJointByAngle('laj1', angle=-75, speed=gain)
+        self.moveJointByAngle('raj1', angle=-75, speed=gain)
+        self.moveJointByAngle('laj2', angle=45, speed=gain)
+        self.moveJointByAngle('raj2', angle=-45, speed=gain)
+        self.moveJointByAngle('laj4', angle=-68, speed=gain)
+        self.moveJointByAngle('raj4', angle=68, speed=gain)
+        self.moveJointByAngle('llj1', angle=-11, speed=gain)
+        self.moveJointByAngle('rlj1', angle=-11, speed=gain)
+
+
+# ==================================== #
+
+
+    def standPosture1(self):
+
+        gain = 4
+        self.moveJointByAngle("llj3", angle=100, speed=gain)
+        self.moveJointByAngle("rlj3", angle=100, speed=gain) # torso
+
+        self.moveJointByAngle("llj2", angle=30, speed=gain)
+        self.moveJointByAngle("rlj2", angle=-30, speed=gain)
+
+        self.moveJointByAngle("llj1", angle=-60, speed=gain)
+        self.moveJointByAngle("rlj1", angle=-60, speed=gain)
+
+        self.moveJointByAngle("llj4", angle=-100, speed=gain)
+        self.moveJointByAngle("rlj4", angle=-100, speed=gain) # knees
+
+        self.moveJointByAngle("llj6", angle=-45, speed=gain)
+        self.moveJointByAngle("rlj6", angle=45, speed=gain)
+
+        self.moveJointByAngle("laj1", angle=20, speed=gain)
+        self.moveJointByAngle("raj1", angle=20, speed=gain)
+
+        self.moveJointByAngle("laj2", angle=0, speed=gain)
+        self.moveJointByAngle("raj2", angle=0, speed=gain)
+
+
+# ==================================== #
+    """
+    If a joint movement does not stop at the requested angle, 
+    increase the counter until it does.
+    """
 
     def moveJointByAngle(self, name: str, angle: float, speed: float):
         currentAngle = self.hj[name]
         speed = abs(speed)
 
-        if currentAngle >= self.hjMax[name]:
-            currentAngle = self.hjMax[name]
-        elif currentAngle <= self.hjMin[name]:
-            currentAngle = self.hjMin[name]
-        
-        if angle > 0:
-            if currentAngle < angle:
-                self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=speed)
-            elif currentAngle >= angle:
-                self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=0)
-        else:
-            if currentAngle > angle:
-                self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=-speed)
-            elif currentAngle <= angle:
-                self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=0)
-
-
-
+        if angle >= self.hjMax[name]:
+            angle = self.hjMax[name]
+        elif angle <= self.hjMin[name]:
+            angle = self.hjMin[name]
+        if abs(angle - currentAngle) < 5:
+            self.pns.hinge_joint_effector(name=self.hjEffector[name], rate=0)
+        elif currentAngle < angle:
+            self.pns.hinge_joint_effector(name=self.hjEffector[name], rate= math.radians(abs(angle - currentAngle)) * speed)
+        elif currentAngle > angle:
+            self.pns.hinge_joint_effector(name=self.hjEffector[name], rate= - math.radians(abs(angle - currentAngle)) * speed)
+       
 
 # ==================================== #
-
-
 
     def die(self, timeout=0):
         """Stop robot execution and close socket connection to server

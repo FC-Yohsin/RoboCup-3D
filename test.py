@@ -1,135 +1,97 @@
-#!usr/bin/env python3
 from Agent import *
 from Action import *
 import time
+import random
 import matplotlib
-if __name__ == '__main__':
-    Player8 = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.9,0],debugLevel=0)
-    # TestAction.Test_step_by_left_foot()
-    time.sleep(1)
-    print("Now moving")
+
+
+
+hjMax  = {
+            'hj1' :  120.0,
+            'hj2' :   45.0,
+            'raj1':  120.0,
+            'raj2':    1.0,
+            'raj3':  120.0,
+            'raj4':   90.0,
+            'laj1':  120.0,
+            'laj2':   95.0,
+            'laj3':  120.0,
+            'laj4':    1.0,
+            'rlj1':    1.0,
+            'rlj2':   25.0,
+            'rlj3':  100.0,
+            'rlj4':    1.0,
+            'rlj5':   75.0,
+            'rlj6':   45.0,
+            'llj1':    1.0,
+            'llj2':   45.0,
+            'llj3':  100.0,
+            'llj4':    1.0,
+            'llj5':   75.0,
+            'llj6':   25.0,} 
+
+
+hjMin      = {
+                'hj1' : -120.0,
+                'hj2' :  -45.0,
+                'raj1': -120.0,
+                'raj2':  -95.0,
+                'raj3': -120.0,
+                'raj4':   -1.0,
+                'laj1': -120.0,
+                'laj2':   -1.0,
+                'laj3': -120.0,
+                'laj4':  -90.0,
+                'rlj1':  -90.0,
+                'rlj2':  -45.0,
+                'rlj3':  -25.0,
+                'rlj4': -130.0,
+                'rlj5':  -45.0,
+                'rlj6':  -25.0,
+                'llj1':  -90.0,
+                'llj2':  -25.0,
+                'llj3':  -25.0,
+                'llj4': -130.0,
+                'llj5':  -45.0,
+                'llj6':  -45.0,}
+
+
+
+
+def get_random_config():
+    lj1 = (random.uniform(hjMin['rlj1'], hjMax['rlj1']), random.uniform(hjMin['rlj1'], hjMax['rlj1']))
+    lj3 = (random.uniform(hjMin['rlj3'], hjMax['rlj3']), random.uniform(hjMin['rlj3'], hjMax['rlj3']))
+    lj4 = (random.uniform(hjMin['rlj4'], hjMax['rlj4']), random.uniform(hjMin['rlj4'], hjMax['rlj4']))
+    lj5 = (random.uniform(hjMin['rlj5'], hjMax['rlj5']), random.uniform(hjMin['rlj5'], hjMax['rlj5']))
+    lj6 =  (random.uniform(hjMin['rlj6'], hjMax['rlj6']), random.uniform(hjMin['rlj6'], hjMax['rlj6']))
     
-    # TestAction.move_hj_to(hj='raj1', percent=45, speed=25)
-    # TestAction.move_hj_to(hj='raj1', percent=0, speed=25)
+    return {
+            "rlj1":[lj1[0], lj1[1]],
+            "llj1":[lj1[1], lj1[0]],
+            "rlj3":[lj3[0], lj3[1]],
+            "rlj4":[lj4[0], lj4[1]],
+            "rlj5":[lj5[0], lj5[1]],
+            "llj3":[lj3[1], lj3[0]],
+            "llj4":[lj4[1], lj4[0]],
+            "llj5":[lj5[1], lj5[0]],
+            "rlj6":[lj6[0], lj6[1]],
+            "llj6":[lj6[1], lj6[0]],
+            }
 
-    # TestAction.move_right_shoulder_pitch_to(40)
-    # TestAction.move_right_shoulder_pitch_to(0)
-    # TestAction.move_right_shoulder_pitch_to(40)
-    # TestAction.move_left_shoulder_pitch_to(10)
-    # TestAction.move_right_shoulder_pitch_to(0)
-    # TestAction.move_left_shoulder_pitch_to(60)
-
-
-
-    # TestAction.move_right_shoulder_yaw_to(0)
-    # TestAction.move_right_shoulder_roll_to(100.0)
-
-    # time.sleep(2)
-    # print("starting")
-    # while True:
-
-    # print("running")
-    # # time.sleep(1)
-    # TestAction.move_right_arm_yaw_to(100)
-    # TestAction.move_right_shoulder_yaw_to(0)
-    # # time.sleep(1)
-    # TestAction.move_right_arm_yaw_to(0)
-    # TestAction.move_right_shoulder_yaw_to(10)
-    # print("done")
-    # # time.sleep(1)
-    # print("running")
-    # TestAction.move_right_arm_yaw_to(100)
-    # TestAction.move_right_shoulder_yaw_to(0)
-    # # time.sleep(1)
-    # TestAction.move_right_arm_yaw_to(0)
-    # TestAction.move_right_shoulder_yaw_to(10)
-    # print("done")
-    # print("running")
-    # # time.sleep(1)
-    # TestAction.move_right_arm_yaw_to(100)
-    # TestAction.move_right_shoulder_yaw_to(0)
-    # # time.sleep(1)
-    # TestAction.move_right_arm_yaw_to(0)
-    # TestAction.move_right_shoulder_yaw_to(10)
-    # print("done")
-    # time.sleep(1)
-
-    # TestAction.move_right_arm_yaw_to(30)
-    # TestAction.
-    # while True:
-    #     move = int(input("move??"))
-    #     TestAction.Test_move_hj_to(move)
-    #     time.sleep(3)
-    #     TestAction.Test_move_hj_to(-move) 
+def get_random_gain():
+    return random.uniform(0.1, 6.0)
 
 
-    # Test =(NaoRobot(7,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 2', startCoordinates=[-4.5, 0.0, 0]))
 
-    #Test Agent.py Use Dict To Easy Init Agent
-    # MyNao = { #"Player2":NaoRobot(2,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 3', startCoordinates=[-1.5, 0.0, 0]),
-    #         "Player3":NaoRobot(3,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 3',startCoordinates=[-2.5, 0.0, 0]),
-    #         "Player4":NaoRobot(4,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 4', startCoordinates=[-3.5, -2.0, 0]),
-    #         "Player5":NaoRobot(5,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 4', startCoordinates=[-3.5, 0.0, 0]),
-    #         "Player6":NaoRobot(6,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 2', startCoordinates=[-3.5, 2.0, 0]),
-    #        "Player7":NaoRobot(7,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 2', startCoordinates=[-4.5, 0.0, 0])
-    #        }
-
-#Test Agent.py Init Playmode --------false
-    #if(MyNao["Player7"].gamestate.__init__(playmode='Play on')):
-    #     Test_By.step_left()
-    # Test =(NaoRobot(7,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 2', startCoordinates=[-0.5, 0.0, 0]))
-#Test Action.py  By use Move_hj_to || Move _hj_by 同样错误的角度值会使机器人关节很奇怪
-    # Test_To = Action(7,'lamour','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.6,0])
-    # Test_By = Action(8,'lamour','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.9,0])    #角度开合更大，已经手臂翻转了
-    # Test_By.Test_by()
-    # Test_To.Test_to()
-
-#Test Action.py Speed By use Move_hj_to || Move _hj_by,机器人会出现骨折现象～～
-    # Test_To7 = Action(7,'lamour','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.6,0])
-    #
-    # Test_To8 = Action(8,'lamour','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-0.5,0.9,0])
-    #
-    # Test_To7.Test_to()
-    # Test_To8.Test_to2()
-#Test Agent.py Test_Orientation
-    # Test =(NaoRobot(7,'lamour','localhost',3100,'rsg/agent/nao/nao_hetero.rsg 2', startCoordinates=[-4.5, 0.0, 0]))
-    # Test.test_orientation()
-
-#Test Action.py Test_Orientation
-
-    # TestAction.Test_orientation(5.0,'orientation_length5')
-    # TestAction.Test_orientation(4.0,'orientation_length4')
-    # TestAction.Test_orientation(3.0,'orientation_length3')
-    # TestAction.Test_orientation(2.0,'orientation_length2')
-    # TestAction.Test_orientation(1.0,'orientation_length1')
-    #到这可以知道，length代表的就是时间值，持续多少秒，下面用matplotlib画图看看是什么样的
-   # =================================================== #
-   #     a simple example to plot a 3d picture
-   # =================================================== #
-     # import numpy as np
-     # import matplotlib.pyplot as plt
-     # import mpl_toolkits.mplot3d
-     #
-     # x,y=np.mgrid[-2:2:20j,-2:2:20j]
-     # z=x*np.exp(-x**2-y**2)
-     #
-     # ax=plt.subplot(111,projection='3d')
-     # ax.plot_surface(x,y,z,rstride=2,cstride=1,cmap=plt.cm.coolwarm,alpha=0.8)
-     # ax.set_xlabel('x')
-     # ax.set_ylabel('y')
-     # ax.set_zlabel('z')
-     #
-     # plt.show()
-
-
-#Test Action.py Step_by_left
-      # TestAction.Test_step_by_left_knee()
-      # TestAction.Test_step_by_right_knee()
-      # TestAction.Test_Walk()
-      # TestAction.Test_step_by_right_foot()
-        # TestAction.Test_step_by_left_foot()
-      # TestAction.Test_to()
-    #  TestAction.Test_Walk()
-     # for testl in range(hjMin['llj3'],hjMax['llj3']):
-     #     print("llj3",testl)
-     #     testl += 1
+if __name__ == '__main__':
+    count = 1
+    while True:
+        print("Agent {}".format(count))
+        agent = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-5.5,0.9,0],debugLevel=0)
+        # agent.set_walk_config(get_random_config())
+        time.sleep(20)
+        print("Now Killing")
+        print(agent.calculate_gyr_fitness())
+        agent.die()
+        time.sleep(2)
+        count += 1

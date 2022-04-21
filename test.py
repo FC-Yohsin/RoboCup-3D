@@ -85,13 +85,13 @@ def get_random_gain():
 
 if __name__ == '__main__':
     count = 1
-    while True:
-        print("Agent {}".format(count))
-        agent = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-5.5,0.9,0],debugLevel=0)
-        # agent.set_walk_config(get_random_config())
-        time.sleep(20)
-        print("Now Killing")
-        print(agent.calculate_gyr_fitness())
-        agent.die()
-        time.sleep(2)
-        count += 1
+    # while True:
+    print("Agent {}".format(count))
+    agent = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-5.5,0.9,0],debugLevel=0)
+    # agent.set_walk_config(get_random_config())
+    # time.sleep(20)
+    # print("Now Killing")
+    # print(agent.calculate_gyr_fitness())
+    # agent.die()
+    # time.sleep(2)
+    # count += 1

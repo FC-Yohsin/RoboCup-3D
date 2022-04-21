@@ -120,7 +120,7 @@ class PNS(object):
                 os.system('rcssserver3d')
             else:
                 message += nextBytes
- 
+
         return message
 
 # ==================================== #
@@ -636,6 +636,32 @@ class NaoRobot(object):
         self.frp        = {'rf': ForceResistanceSensor('rf'),
                            'lf': ForceResistanceSensor('lf')}
 
+
+        self.flags_positions = {
+            "F1L": [-16,10],
+            "F2L": [-16,-10],
+            "F1R": [16,10],
+            "F2R": [16,-10],
+            "G1L": [16,1.05],
+            "G2L": [16,-1.05],
+            "G1R": [16,1.05],
+            "G2R": [16,-1.05],
+            "Center": [0,0],
+        }
+
+
+        self.flag_distances = {
+            "F1L": float("inf"),
+            "F2L": float("inf"),
+            "F1R": float("inf"),
+            "F2R": float("inf"),
+            "G1L": float("inf"),
+            "G2L": float("inf"),
+            "G1R": float("inf"),
+            "G2R": float("inf"),
+            "B" : float("inf"),
+        }
+
         # =========================================================增加vision
         self.vision     = {
                             'F1L' : Vision('F1L'),
@@ -800,14 +826,13 @@ class NaoRobot(object):
 
         self.alive = True
         startSkippingNumber = 10
-        print(self.perceive())
+        # print(self.perceive())
 
         iteration         = -1
         skippedIterations =  0
         while self.alive:
             iteration += 1
             self.counter += 1
-
 #             if self.check_sync() >= startSkippingNumber:
 #                 while self.check_sync() > 2:
 # #                    print(self.check_sync())
@@ -817,6 +842,7 @@ class NaoRobot(object):
 #                     skippedIterations += 1 
 
             self.perceive()
+            print(self.flag_distances)
             self.think()
 
             if iteration * CYCLE_LENGTH % 3.0 == 0:
@@ -850,13 +876,30 @@ class NaoRobot(object):
 
 
 # ==================================== #
-
+    def get_position(self):
+        """
+        Returns the current position of the robot.
+        """
+        # distance from F1R: K
+        # distance from F2R: L
+        K = self.flag_distances['F1R']
+        L = self.flag_distances['F2R']
+        sqr_dist = (L**2) - (K**2)
+        F1R_pos = self.flags_positions['F1R']
+        F2R_pos = self.flags_positions['F2R']
+        y = (-K**2+L**2) / 40
+        print("y: {}".format(y))
+        temp = -(K**4) + (2*K**2*L**2) + (800*K**2) - (L**4) + (800*L**2) - 160000
+        x = -(math.sqrt(temp)/40) + 16
+        return [x, y] 
 
     def think(self):
         self.evaluating()
-
+        current_pos = self.get_position()
+        print("current pos: {}".format(current_pos))
         if self.counter <= 80:
             self.stand()
+
         if self.counter > 80 and self.counter <= 120:
             self.simpleWalk()
         if self.counter > 120: 
@@ -1142,36 +1185,50 @@ class NaoRobot(object):
 
             # vision information
             elif perceptor[0] == 'See':
+                # print(perceptor[1:])
                 # pass
                 # 添加vision,由于前面是使用字典进行解析的，所以不能使用类似这种格式，self.vision['f1l'].setflag(xxx),擦，竟然又可以了，什么鬼
                 #在这里指存储一遍，故不必设置成字典相对应
                 for field in perceptor[1:]:
                     if field[0] == 'F1L':
+                        # print(field)
                         # self.vision[perceptor[1][1]].setFlag(perceptor[2][1:])
                         #上面这种写法竟然是错的，虽然逻辑是相同的，但是提示unhashable list,don't know why
+                        # self.flag_distances['F1L'] = field[1]
+                        self.flag_distances['F1L'] = field[1][1]
                         self.vision['F1L'].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'F2L':
+                        # print(field)
+                        self.flag_distances['F2L'] = field[1][1]
                         self.vision['F2L'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'F1R':
+                        self.flag_distances['F1R'] = field[1][1]
                         self.vision['F1R'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'F2R':
+                        self.flag_distances['F2R'] = field[1][1]
                         self.vision['F2R'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'G1L':
+                        self.flag_distances['G1L'] = field[1][1]
                         self.vision['G1L'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'G2L':
+                        self.flag_distances['G2L'] = field[1][1]
                         self.vision['G2L'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'G1R':
+                        # print(field)
+                        self.flag_distances['G1R'] = field[1][1]
                         self.vision['G1R'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'G2R':
+                        self.flag_distances['G2R'] = field[1][1]
                         self.vision['G2R'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'B':
+                        self.flag_distances['B'] = field[1][1]
                         self.vision['B'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setBallLocation(perceptor[2][1:])
 

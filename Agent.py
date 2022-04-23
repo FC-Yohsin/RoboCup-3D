@@ -902,14 +902,19 @@ class NaoRobot(object):
 # ==================================== #
 
     def get_distance_fitness_score(self):
-        distance_traveled = math.dist(self.get_position(), [self.startCoordinates[0], self.startCoordinates[1]])
+        current_pos = self.get_position()
+        distance_traveled = math.dist(current_pos, [self.startCoordinates[0], self.startCoordinates[1]])
+        if current_pos[0] < self.startCoordinates[0]:
+            distance_traveled = distance_traveled * -1
+        print(self.visible_flags)
+        if "F1R" not in self.visible_flags and "F2R" not in self.visible_flags:
+            distance_traveled = distance_traveled - 5
         return distance_traveled
 
 # ==================================== #
 
     def think(self):
         self.evaluating()
-        current_pos = self.get_position()
         # print("current pos: {}".format(current_pos))
         # print("visible flags: {}".format(self.visible_flags))
         if self.counter <= 80:
@@ -1166,7 +1171,8 @@ class NaoRobot(object):
 #        start = time.time()
         perceptors = self.pns.receive_perceptors()
 #        print("receive_perceptors() took {:.8f} sec.".format(time.time()-start))
-        self.visible_flags = []
+        if self.counter % 3 == 0:
+            self.visible_flags = []
         for perceptor in perceptors:
 
             # time
@@ -1212,48 +1218,48 @@ class NaoRobot(object):
                         # self.flag_distances['F1L'] = field[1]
                         self.visible_flags.append('F1L')
                         self.flag_distances['F1L'] = field[1][1]
-                        self.vision['F1L'].setMyFlag(perceptor[2][1:])
+                        # self.vision['F1L'].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'F2L':
                         # print(field)
                         self.visible_flags.append('F2L')
                         self.flag_distances['F2L'] = field[1][1]
-                        self.vision['F2L'].setMyFlag(perceptor[2][1:])
+                        # self.vision['F2L'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'F1R':
                         self.visible_flags.append('F1R')
                         self.flag_distances['F1R'] = field[1][1]
-                        self.vision['F1R'].setMyFlag(perceptor[2][1:])
+                        # self.vision['F1R'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'F2R':
                         self.visible_flags.append('F2R')
                         self.flag_distances['F2R'] = field[1][1]
-                        self.vision['F2R'].setMyFlag(perceptor[2][1:])
+                        # self.vision['F2R'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'G1L':
                         self.visible_flags.append('G1L')
                         self.flag_distances['G1L'] = field[1][1]
-                        self.vision['G1L'].setMyFlag(perceptor[2][1:])
+                        # self.vision['G1L'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'G2L':
                         self.visible_flags.append('G2L')
                         self.flag_distances['G2L'] = field[1][1]
-                        self.vision['G2L'].setMyFlag(perceptor[2][1:])
+                        # self.vision['G2L'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'G1R':
                         # print(field)
                         self.visible_flags.append('G1R')
                         self.flag_distances['G1R'] = field[1][1]
-                        self.vision['G1R'].setMyFlag(perceptor[2][1:])
+                        # self.vision['G1R'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'G2R':
                         self.visible_flags.append('G2R')
                         self.flag_distances['G2R'] = field[1][1]
-                        self.vision['G2R'].setMyFlag(perceptor[2][1:])
+                        # self.vision['G2R'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setMyFlag(perceptor[2][1:])
                     elif field[0] == 'B':
                         self.visible_flags.append('B')
                         self.flag_distances['B'] = field[1][1]
-                        self.vision['B'].setMyFlag(perceptor[2][1:])
+                        # self.vision['B'].setMyFlag(perceptor[2][1:])
                         # self.vision[perceptor[1][1]].setBallLocation(perceptor[2][1:])
 
                     elif field[0] == 'team':

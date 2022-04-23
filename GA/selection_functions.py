@@ -21,6 +21,7 @@ class SelectionFunctions:
         assert select_count <= len(population)
 
         selected_chromosomes_indices = random.sample([x for x in range(len(population))],k=select_count)
+        print("Selected Chromosomes Indices: ", selected_chromosomes_indices)
         return selected_chromosomes_indices
 
     
@@ -29,13 +30,15 @@ class SelectionFunctions:
         """
         This method will select chromosomes with the highest fitness values from the population as selected_chromosome
         """
-        assert len(population) == len(fitness_scores)
+        # print(len(population), len(fitness_scores))
+        # assert len(population) == len(fitness_scores)
         assert select_count <= len(population)
 
         fitness_scores_copy = fitness_scores.copy()
         fitness_scores_copy.sort(reverse=True)
         selected_chromosome_index = [fitness_scores.index(value) for value in fitness_scores_copy[:select_count]]
         # selected_chromosome = [population[index] for index in selected_chromosome_index]
+        print("Selected Chromosomes Indices: ", selected_chromosome_index)
         return selected_chromosome_index
 
     @staticmethod
@@ -65,7 +68,9 @@ class SelectionFunctions:
         #             selected_chromosome.append(population[i])
         
         # assert len(selected_chromosome) == select_count
-        return random.choices([x for x in range(len(population))], weights=normalized_values, k=select_count)
+        selected_chromosome_indices = random.choices([x for x in range(len(population))], weights=normalized_values, k=select_count)
+        print("Selected Chromosomes Indices: ", selected_chromosome_indices)
+        return selected_chromosome_indices
 
     @staticmethod
     def rank_based_selection(population: list, fitness_scores: list, select_count: int) -> list:
@@ -100,7 +105,9 @@ class SelectionFunctions:
         #             selected_chromosome.append(population[i])
         
         # assert len(selected_chromosome) == select_count
-        return random.choices([x for x in range(len(population))], weights=ranks, k=select_count)
+        selected_chromosome_indices = random.choices([x for x in range(len(population))], weights=ranks, k=select_count)
+        print("Selected Chromosomes Indices: ", selected_chromosome_indices)
+        return selected_chromosome_indices
 
 
     @staticmethod
@@ -124,4 +131,5 @@ class SelectionFunctions:
             selected_chromosome.append(candidate)
 
         assert len(selected_chromosome) == select_count
+        print("Selected Chromosomes Indices: ", selected_chromosome)
         return selected_chromosome

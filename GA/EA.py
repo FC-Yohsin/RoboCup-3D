@@ -1,15 +1,13 @@
-
 import sys
-  
 # setting path
-sys.path.append('../robocup-3d-simluation-with-python')
+sys.path.append('../robocup_3d')
 
 
 from problem import Problem
 from selection_functions import SelectionFunctions
 from enum import Enum
 import random
-from ..constants import *
+import constants
 from Agent import *
 from Action import *
 import time
@@ -24,10 +22,10 @@ import random
 # ITERATIONS = 10
 
 
-POPULATION_SIZE = 10
-OFFSPRING_SIZE = 10 # offspring size must be a multiple of 2 (even)
-GENERATIONS = 500
-MUTATION_RATE = 0.70                                                                                     
+POPULATION_SIZE = 20
+OFFSPRING_SIZE = 6 # offspring size must be a multiple of 2 (even)
+GENERATIONS = 10
+MUTATION_RATE = 0.45                                                                                     
 ITERATIONS = 10
 
 
@@ -84,6 +82,17 @@ class EA_NaoWalkOptimizer:
         """
         for i in range(POPULATION_SIZE):
             self.population.append(self._generate_random_individual())
+            self.fitness_scores.append(0.0)
+
+    def add_custom_population(self, population):
+        """
+        This method will add a population to the current population
+        """
+        if len(population) == POPULATION_SIZE:
+            self.population = population
+            self.fitness_scores = [0.0] * POPULATION_SIZE
+        else:
+            print("Population size is not correct")
     
     def add_custom_child(self, child):
         """
@@ -94,7 +103,7 @@ class EA_NaoWalkOptimizer:
         else:
             self.population[0] = child
 
-    def _crossover(self, p1, p2):
+    def _crossover(self, p1: dict, p2: dict)-> dict:
         """
         This method will perform crossover between two parents. Both parents are dictionaries
         """
@@ -106,19 +115,20 @@ class EA_NaoWalkOptimizer:
                 child[key] = p2[key]
         return child
 
-    def _mutation(self, child, mutation_rate):
+    def _mutation(self, child: dict, mutation_rate: float)-> dict:
         """
         This method will perform mutation on the child
         """
         for key in child.keys():
             if random.random() < mutation_rate:
-                child[key] = self.problem.generate_random_individual()[key]
+                child[key] = self._generate_random_individual()[key]
         return child
 
     def generate_offspring(self, selection: Selection):
         """
         This method will generate offspring from the population
         """
+        print("Generating Offspring Now")
         # Selecting the fittest chromosomes
         if selection == Selection.Random:
             parents = SelectionFunctions.random(self.population, self.fitness_scores, OFFSPRING_SIZE)
@@ -132,31 +142,47 @@ class EA_NaoWalkOptimizer:
             parents = SelectionFunctions.binary_tournament(self.population, self.fitness_scores, OFFSPRING_SIZE)
         
         for i in range(0,OFFSPRING_SIZE,2):
-            child1 = self.problem.crossover(parents[i],parents[i+1])
-            child2 = self.problem.crossover(parents[i],parents[i+1])
+            child1 = self._crossover(self.population[parents[i]],self.population[parents[i+1]])
+            child2 = self._crossover(self.population[parents[i]],self.population[parents[i+1]])
 
-            child1 = self.problem.mutation(child1, MUTATION_RATE)
-            child2 = self.problem.mutation(child2, MUTATION_RATE)
+            child1 = self._mutation(child1, MUTATION_RATE)
+            child2 = self._mutation(child2, MUTATION_RATE)
 
             self.population.append(child1)
             self.population.append(child2)
+            self.fitness_scores.append(0.0)
+            self.fitness_scores.append(0.0)
 
 
-    def update_fitness_scores(self):
+    def update_fitness_scores(self, only_zero=False):
         """
         This method will update the fitness scores of the current population
         """
         for i in range(len(self.population)):
-            print("Starting to Evaluate Individual")
-            agent = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-5.5,0.9,0],debugLevel=0)
-            agent.set_walk_config(self.population[i])
-            time.sleep(20)
-            print("Now Killing")
-            score = agent.get_distance_fitness_score()
-            self.fitness_scores[i] = score
-            print("Distance Travelled: {}".format(score))
-            agent.die()
-            time.sleep(2)
+            if only_zero:
+                if self.fitness_scores[i] == 0.0:
+                    print("Starting to Evaluate Individual {}".format(i))
+                    agent = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-5.5,0.9,0],debugLevel=0)
+                    agent.set_walk_config(self.population[i])
+                    time.sleep(20)
+                    print("Now Killing")
+                    score = agent.get_distance_fitness_score()
+                    self.fitness_scores[i] = score
+                    print("Distance Travelled: {}".format(score))
+                    agent.die()
+                    time.sleep(2)
+            elif not only_zero:
+                print("Starting to Evaluate Individual {}".format(i))
+                agent = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-5.5,0.9,0],debugLevel=0)
+                agent.set_walk_config(self.population[i])
+                time.sleep(20)
+                print("Now Killing")
+                score = agent.get_distance_fitness_score()
+                self.fitness_scores[i] = score
+                print("Distance Travelled: {}".format(score))
+                agent.die()
+                time.sleep(2)
+
         print("Done Updating Fitness Scores")
 
     def evaluate_population(self, selection: Selection):
@@ -164,7 +190,7 @@ class EA_NaoWalkOptimizer:
         This method will evaluate the existing population and select the fittest chromosomes
         """
         # updating the fitness scores
-
+        print('Starting to Evaluate Population')
         # Selecting the unfit chromosomes
         if selection == Selection.Random:
             survivors_indices = SelectionFunctions.random(self.population, self.fitness_scores, POPULATION_SIZE)
@@ -177,15 +203,25 @@ class EA_NaoWalkOptimizer:
         elif selection == Selection.BinaryTournament:
             survivors_indices = SelectionFunctions.binary_tournament(self.population, self.fitness_scores, POPULATION_SIZE)
 
-        # updating the population with survivors
-        for i in range(len(survivors_indices)):
-            self.population[i] = self.population[survivors_indices[i]]
-        # self.population = survivors
-        # self.problem.population = self.population
-        # self.fitness_scores = self.problem.fitness_score()
+        # updating the population with survivorsi 
+        temp_pop = []
+        temp_fitness = []
+        for i in survivors_indices:
+            temp_pop.append(self.population[i])
+            temp_fitness.append(self.fitness_scores[i])
+
+        self.population = temp_pop
+        self.fitness_scores = temp_fitness
+
+        del temp_pop
+        del temp_fitness
+        
 
         # incrementing the generation
         self.generation += 1
+        print("Done Evaluating Population")
+        print("Population Size: {}".format(len(self.population)))
+        print("Fitness Scores Length: {}".format(len(self.fitness_scores)))
 
     
     def best_fitness_score(self):

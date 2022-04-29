@@ -793,6 +793,12 @@ class NaoRobot(object):
                             "rlj6":[-4,1],
                             "llj6":[-1,4]}
 
+        
+        self.visible_flags = []
+        self.is_fallen = False
+        self.penalty = 0
+        self.fallen_count = 0
+
         self.startCoordinates = startCoordinates
 
         self.pns = PNS(self.agentID, self.teamname,
@@ -840,8 +846,7 @@ class NaoRobot(object):
 #             if self.check_sync() >= startSkippingNumber:
 #                 while self.check_sync() > 2:
 # #                    print(self.check_sync())
-#                     self.perceive(skip=True)
-#                     print("from another perc: {}".format(self.counter))
+#                     self.peself.is_fallenfrom another perc: {}".format(self.counter))
 #                     iteration         += 1
 #                     skippedIterations += 1 
 
@@ -903,20 +908,40 @@ class NaoRobot(object):
 
     def get_distance_fitness_score(self):
         current_pos = self.get_position()
-        distance_traveled = math.dist(current_pos, [self.startCoordinates[0], self.startCoordinates[1]])
+        score = math.dist(current_pos, [self.startCoordinates[0], self.startCoordinates[1]]) * 30
+
         if current_pos[0] < self.startCoordinates[0]:
-            distance_traveled = distance_traveled * -1
-        print(self.visible_flags)
-        if "F1R" not in self.visible_flags and "F2R" not in self.visible_flags:
-            distance_traveled = distance_traveled - 5
-        return distance_traveled
+            score = score * -1
+        print("Score 01: {}".format(score))
+        if self.is_fallen:
+            score = score - (100*self.penalty)
+        print("Score 02: {}".format(score))
+        straight_line_error = abs(self.get_position()[1]-self.startCoordinates[1])
+
+        score = score - (straight_line_error * 10)
+        # print(self.visible_flags)
+        # if "F1R" not in self.visi ble_flags and "F2R" not in self.visible_flags:
+        #     distance_traveled = distance_traveled - 5
+        print("Score 03: {}".format(score))
+        return score
 
 # ==================================== #
 
     def think(self):
         self.evaluating()
-        # print("current pos: {}".format(current_pos))
-        # print("visible flags: {}".format(self.visible_flags))
+        if "F1R" not in self.visible_flags and "F2R" not in self.visible_flags and "B" not in self.visible_flags and "G1R" not in self.visible_flags and "G2R" not in self.visible_flags:
+            self.fallen_count += 1
+
+        # print("straight line error: {}".format(abs(self.get_position()[1]-self.startCoordinates[1])))
+        # print("score: {}".format(self.get_distance_fitness_score()))
+
+        # print("Visible Flags:", self.visible_flags)
+        # print(self.is_fallen)
+        if self.fallen_count == 70:
+            self.is_fallen = True
+            self.penalty = 70/self.counter
+            # self.die()
+        # print("Penalty: {}".format(self.penalty))
         if self.counter <= 80:
             self.stand()
 
@@ -1171,8 +1196,12 @@ class NaoRobot(object):
 #        start = time.time()
         perceptors = self.pns.receive_perceptors()
 #        print("receive_perceptors() took {:.8f} sec.".format(time.time()-start))
-        if self.counter % 3 == 0:
-            self.visible_flags = []
+        # if self.counter % 3 == 0:
+        #     self.visible_flags = []
+        # title = [y[0] for y in perceptors]
+        # if "See" not in title:
+        #     self.visible_flags = []
+
         for perceptor in perceptors:
 
             # time
@@ -1199,6 +1228,8 @@ class NaoRobot(object):
             # gyroscope
             elif perceptor[0] == 'GYR':
                 self.gyr.set(perceptor[2][1:])
+                # print("GYR:")
+                # print(perceptor)
 
             # set accelerometer
             elif perceptor[0] == 'ACC':
@@ -1210,6 +1241,9 @@ class NaoRobot(object):
                 # pass
                 # 添加vision,由于前面是使用字典进行解析的，所以不能使用类似这种格式，self.vision['f1l'].setflag(xxx),擦，竟然又可以了，什么鬼
                 #在这里指存储一遍，故不必设置成字典相对应
+                self.visible_flags = []
+                self.visible_flags = [x[0] for x in perceptor[1:]]
+                # print(len(perceptor[1:]))
                 for field in perceptor[1:]:
                     if field[0] == 'F1L':
                         # print(field)
@@ -1275,7 +1309,7 @@ class NaoRobot(object):
             #针对player这一块的信息解析来讲，是有问题的，幸好可以使用最后的排除方法。所以vison['p]标签本来是没什么用的及时解析到也没用，但可以用来存储player的位置信息
             #此处有错误，但不知问题出在哪里IndexError: list index out of range, 是不是因为没有player才导致呢？先注释掉试试
 
-
+        
 
             # hinge joints
             elif perceptor[0] == 'HJ':
@@ -1290,7 +1324,11 @@ class NaoRobot(object):
                 if self.debugLevel >= 10:
                     print("DEBUG: unknown perceptor: {}".format(perceptor[0]))
                     print(perceptor)
-            
+
+
+        # title = [y[0] for y in perceptors]
+        # if "See" not in title:
+        #     self.visible_flags = []    
          
 # ==================================== #
 

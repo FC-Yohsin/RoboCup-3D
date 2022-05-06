@@ -57,6 +57,8 @@ def congigure_vector(vector):
     return {
         "rlj1": [vector[0], vector[1]],
         "llj1": [vector[1], vector[0]],
+        "rlj2": [vector[0], vector[1]],
+        "llj2": [vector[1], vector[0]],
         "rlj3": [vector[2], vector[3]],
         "llj3": [vector[3], vector[2]],
         "rlj4": [vector[4], vector[5]],
@@ -65,13 +67,21 @@ def congigure_vector(vector):
         "llj5": [vector[7], vector[6]],
         "rlj6": [vector[8], vector[9]],
         "llj6": [vector[9], vector[8]],
+        "raj1": [vector[10], vector[11]],
+        "laj1": [vector[11], vector[10]],
+        "raj2": [vector[12], vector[13]],
+        "laj2": [vector[13], vector[12]],
+        "raj3": [vector[14], vector[15]],
+        "laj3": [vector[15], vector[14]],
+        "raj4": [vector[16], vector[17]],
+        "laj4": [vector[17], vector[16]],
     }
 
 def config_to_vector(config):
 
     joints = [
-        'rlj1', 'llj1', 'rlj3', 'llj3', 'rlj4', 'llj4', 'rlj5', 'llj5', 'rlj6',
-        'llj6'
+        'rlj1', 'llj1','rlj2', 'llj2', 'rlj3', 'llj3', 'rlj4', 'llj4', 'rlj5', 'llj5', 'rlj6',
+        'llj6', 'raj1', 'laj1', 'raj2', 'laj2', 'raj3', 'laj3', 'raj4', 'laj4',
     ]
 
     lst = []
@@ -86,8 +96,12 @@ def get_custom_vector(child):
 
 
 def get_random_vector():
+
     lj1 = (random.uniform(hjMin['rlj1'], hjMax['rlj1']),
            random.uniform(hjMin['rlj1'], hjMax['rlj1']))
+           
+    lj2 = (random.uniform(hjMin['rlj2'], hjMax['rlj1']),
+            random.uniform(hjMin['rlj1'], hjMax['rlj1']))
 
     lj3 = (random.uniform(hjMin['rlj3'], hjMax['rlj3']),
            random.uniform(hjMin['rlj3'], hjMax['rlj3']))
@@ -100,17 +114,29 @@ def get_random_vector():
 
     lj6 = (random.uniform(hjMin['rlj6'], hjMax['rlj6']),
            random.uniform(hjMin['rlj6'], hjMax['rlj6']))
+    
+    aj1 = (random.uniform(hjMin['raj1'], hjMax['raj1']),
+            random.uniform(hjMin['raj1'], hjMax['raj1']))
+
+    aj2 = (random.uniform(hjMin['raj2'], hjMax['raj2']), 
+            random.uniform(hjMin['raj2'], hjMax['raj2']))
+
+    aj3 = (random.uniform(hjMin['raj3'], hjMax['raj3']), 
+            random.uniform(hjMin['raj3'], hjMax['raj3']))
+
+    aj4 = (random.uniform(hjMin['raj4'], hjMax['raj4']), 
+            random.uniform(hjMin['raj4'], hjMax['raj4']))
+
+
 
     return [
-        lj1[0], lj1[1], lj3[0], lj3[1], lj4[0], lj4[1], lj5[0], lj5[1], lj6[0],
-        lj6[1]
+       lj1[0], lj1[1], lj2[0], lj2[1] ,lj3[0], lj3[1], lj4[0], lj4[1], lj5[0], lj5[1], lj6[0],
+        lj6[1], aj1[0], aj1[1], aj2[0], aj2[1], aj3[0], aj3[1], aj4[0], aj4[1],
     ]
 
 
 joints = [
-    'rlj1', 'llj1', 'rlj3', 'llj3', 'rlj4', 'llj4', 'rlj5', 'llj5', 'rlj6',
-    'llj6'
+    'rlj1', 'llj1', 'rlj2', 'llj2' ,'rlj3', 'llj3', 'rlj4', 'llj4', 'rlj5', 'llj5', 'rlj6',
+    'llj6', 'raj1', 'laj1', 'raj2', 'laj2', 'raj3', 'laj3', 'raj4', 'laj4'
 ]
 
-
-print(congigure_vector([-44.146052750186364, -37.59012238826328, 65.86125426370435, 38.1258268703742, -83.29634569170925, -72.79896808588151, 30.30464613964763, 24.584450648748327, 6.271676051348379, -14.851921243124966]))

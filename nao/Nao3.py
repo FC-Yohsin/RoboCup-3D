@@ -1,19 +1,3 @@
-"""
-这个不仅是长胳膊长腿还是大屁股的
-longer legs and arms + wider hip Nao
-{
-    'Hip1RelTorso_X' => 0.072954143,
-    'Hip1RelTorso_Z' => -0.115,
-    'ThighRelHip2_Z' => -0.067868424,
-    'AnkleRelShank_Z' => -0.082868424,
-    'lj5_max_abs_speed' => 6.1395,
-    'lj6_max_abs_speed' => 6.1395,
-    'ElbowRelUpperArm_Y' => 0.125736848,
-    'UseToe' => 'false'
-}
-"""
-
-
 from Agent import *
 from Action import *
 from Think import *

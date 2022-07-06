@@ -1,18 +1,3 @@
-"""
-一共有五种NAO，采取这种写法是为了将每种类型的进行独立控制，这个是长胳膊长腿的
-#This is a Long legs and arms Nao
-{
-    'Hip1RelTorso_X' => 0.055,
-    'Hip1RelTorso_Z' => -0.115,
-    'ThighRelHip2_Z' => -0.05832,
-    'AnkleRelShank_Z' => -0.07332,
-    'lj5_max_abs_speed' => 6.1395,
-    'lj6_max_abs_speed' => 6.1395,
-    'ElbowRelUpperArm_Y' => 0.10664,
-    'UseToe' => 'false'
-}
-"""
-
 from Agent import *
 from Action import *
 from Think import *

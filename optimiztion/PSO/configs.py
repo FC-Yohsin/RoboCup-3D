@@ -57,25 +57,35 @@ def congigure_vector(vector):
     return {
         "rlj1": [vector[0], vector[1]],
         "llj1": [vector[1], vector[0]],
-        "rlj2": [vector[0], vector[1]],
-        "llj2": [vector[1], vector[0]],
-        "rlj3": [vector[2], vector[3]],
-        "llj3": [vector[3], vector[2]],
-        "rlj4": [vector[4], vector[5]],
-        "llj4": [vector[5], vector[4]],
-        "rlj5": [vector[6], vector[7]],
-        "llj5": [vector[7], vector[6]],
-        "rlj6": [vector[8], vector[9]],
-        "llj6": [vector[9], vector[8]],
-        "raj1": [vector[10], vector[11]],
-        "laj1": [vector[11], vector[10]],
-        "raj2": [vector[12], vector[13]],
-        "laj2": [vector[13], vector[12]],
-        "raj3": [vector[14], vector[15]],
-        "laj3": [vector[15], vector[14]],
-        "raj4": [vector[16], vector[17]],
-        "laj4": [vector[17], vector[16]],
+
+        "rlj2": [vector[2], vector[3]],
+        "llj2": [vector[3], vector[2]],
+
+        "rlj3": [vector[4], vector[5]],
+        "llj3": [vector[5], vector[4]],
+
+        "rlj4": [vector[6], vector[7]],
+        "llj4": [vector[7], vector[6]],
+
+        "rlj5": [vector[8], vector[9]],
+        "llj5": [vector[9], vector[8]],
+
+        "rlj6": [vector[10], vector[11]],
+        "llj6": [vector[11], vector[10]],
+
+        "raj1": [vector[12], vector[13]],
+        "laj1": [vector[13], vector[12]],
+
+        "raj2": [vector[14], vector[15]],
+        "laj2": [vector[15], vector[14]],
+
+        "raj3": [vector[16], vector[17]],
+        "laj3": [vector[17], vector[16]],
+
+        "raj4": [vector[18], vector[19]],
+        "laj4": [vector[19], vector[18]],
     }
+
 
 def config_to_vector(config):
 
@@ -100,8 +110,8 @@ def get_random_vector():
     lj1 = (random.uniform(hjMin['rlj1'], hjMax['rlj1']),
            random.uniform(hjMin['rlj1'], hjMax['rlj1']))
            
-    lj2 = (random.uniform(hjMin['rlj2'], hjMax['rlj1']),
-            random.uniform(hjMin['rlj1'], hjMax['rlj1']))
+    lj2 = (random.uniform(hjMin['rlj2'], hjMax['rlj2']),
+            random.uniform(hjMin['rlj2'], hjMax['rlj2']))
 
     lj3 = (random.uniform(hjMin['rlj3'], hjMax['rlj3']),
            random.uniform(hjMin['rlj3'], hjMax['rlj3']))

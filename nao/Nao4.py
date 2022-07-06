@@ -1,19 +1,3 @@
-"""
-有脚趾的一类
-Nao Toes Model
-{
-    'Hip1RelTorso_X' => 0.055,
-    'Hip1RelTorso_Z' => -0.115,
-    'ThighRelHip2_Z' => -0.04,
-    'AnkleRelShank_Z' => -0.055,
-    'lj5_max_abs_speed' => 6.1395,
-    'lj6_max_abs_speed' => 6.1395,
-    'ElbowRelUpperArm_Y' => 0.07,
-    'UseToe' => 'true',
-    'ToeLength' => 0.035517656
-}
-"""
-
 from Agent import *
 from Action import *
 from Think import *

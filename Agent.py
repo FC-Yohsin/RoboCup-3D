@@ -546,7 +546,7 @@ class NaoRobot(object):
     机器人的实现"""
 
     def __init__(self, agentID, teamname, host='localhost', port=3100, model='', debugLevel=0,
-            startCoordinates=[-0.5, 0, 0], walk_gain=4.0): 
+            startCoordinates=[-0.5, 0, 0]): 
 
         self.agentID       = agentID
         self.teamname      = teamname
@@ -558,14 +558,12 @@ class NaoRobot(object):
         self.realstarttime = None # starttime of robot
         self.simstarttime  = None 
         self.counter = 0
-        self.walk_gain = walk_gain
         # set maximum hinge effector speed
         self.maxhjSpeed = 7.035
 
         # movement schedule
         # each sublist should contain a function object and
         # a dictionary of keyword arguments
-        #每个调度表应该包含一个函数对象和一个关键参数的字典
         # e.g. [foo, {'kw1': val1, 'kw2', val2}]
         # the function will be executed until it returns "done"
         self.msched     = MovementScheduler()
@@ -632,7 +630,6 @@ class NaoRobot(object):
                            'llj6': 'lle6',} 
 
         # force resistance perceptors
-        #力量抵抗感知器
         self.frp        = {'rf': ForceResistanceSensor('rf'),
                            'lf': ForceResistanceSensor('lf')}
 
@@ -781,18 +778,6 @@ class NaoRobot(object):
                            'llj5': 0.0,
                            'llj6': 0.0,}
 
-        # self.walk_config = {
-        #                     "rlj1":[-12,-11],
-        #                     "llj1":[-11,-12],
-        #                     "rlj3":[40.4,15],
-        #                     "rlj4":[-55,-45],
-        #                     "rlj5":[13,30],
-        #                     "llj3":[15,40.4],
-        #                     "llj4":[-45,-55],
-        #                     "llj5":[30,13],
-        #                     "rlj6":[-4,1],
-        #                     "llj6":[-1,4]}
-
         
         self.visible_flags = []
         self.is_fallen = False
@@ -928,27 +913,8 @@ class NaoRobot(object):
 # ==================================== #
 
     def think(self):
-        self.evaluating()
-        if "F1R" not in self.visible_flags and "F2R" not in self.visible_flags and "B" not in self.visible_flags and "G1R" not in self.visible_flags and "G2R" not in self.visible_flags:
-            self.fallen_count += 1
-
-        # print("straight line error: {}".format(abs(self.get_position()[1]-self.startCoordinates[1])))
-        # print("score: {}".format(self.get_distance_fitness_score()))
-
-        # print("Visible Flags:", self.visible_flags)
-        # print(self.is_fallen)
-        if self.fallen_count == 70:
-            self.is_fallen = True
-            self.penalty = 70/self.counter
-            # self.die()
-        # print("Penalty: {}".format(self.penalty))
         if self.counter <= 80:
             self.stand()
-
-        if self.counter > 80 and self.counter <= 120:
-            self.simpleWalk()
-        if self.counter > 120: 
-            self.counter = 80
 
 # ==================================== #
     def simpleWalk(self):
@@ -963,8 +929,8 @@ class NaoRobot(object):
                 "llj1",
                 self.walk_config["llj1"][0], 
                 gain)
-            self.moveJointByAngle("rlj2", self.walk_config["rlj2"][0], gain)
-            self.moveJointByAngle("llj2", self.walk_config["llj2"][0], gain)
+            # self.moveJointByAngle("rlj2", self.walk_config["rlj2"][0], gain)
+            # self.moveJointByAngle("llj2", self.walk_config["llj2"][0], gain)
             self.moveJointByAngle(
                 "rlj3",
                 self.walk_config["rlj3"][0], 
@@ -999,14 +965,14 @@ class NaoRobot(object):
                 "llj6", 
                 self.walk_config["llj6"][0], 
                 gain)
-            self.moveJointByAngle("raj1", self.walk_config["raj1"][0], gain)
-            self.moveJointByAngle("laj1", self.walk_config["laj1"][0], gain)
-            self.moveJointByAngle("raj2", self.walk_config["raj2"][0], gain)
-            self.moveJointByAngle("laj2", self.walk_config["laj2"][0], gain)
-            self.moveJointByAngle("raj3", self.walk_config["raj3"][0], gain)
-            self.moveJointByAngle("laj3", self.walk_config["laj3"][0], gain)
-            self.moveJointByAngle("raj4", self.walk_config["raj4"][0], gain)
-            self.moveJointByAngle("laj4", self.walk_config["laj4"][0], gain)
+            # self.moveJointByAngle("raj1", self.walk_config["raj1"][0], gain)
+            # self.moveJointByAngle("laj1", self.walk_config["laj1"][0], gain)
+            # self.moveJointByAngle("raj2", self.walk_config["raj2"][0], gain)
+            # self.moveJointByAngle("laj2", self.walk_config["laj2"][0], gain)
+            # self.moveJointByAngle("raj3", self.walk_config["raj3"][0], gain)
+            # self.moveJointByAngle("laj3", self.walk_config["laj3"][0], gain)
+            # self.moveJointByAngle("raj4", self.walk_config["raj4"][0], gain)
+            # self.moveJointByAngle("laj4", self.walk_config["laj4"][0], gain)
 
 
         if self.counter > 95 and self.counter <= 120:
@@ -1019,8 +985,8 @@ class NaoRobot(object):
                 "llj1",
                 self.walk_config["llj1"][1], 
                 gain)
-            self.moveJointByAngle("rlj2", self.walk_config["rlj2"][0], gain)
-            self.moveJointByAngle("llj2", self.walk_config["llj2"][0], gain)
+            # self.moveJointByAngle("rlj2", self.walk_config["rlj2"][0], gain)
+            # self.moveJointByAngle("llj2", self.walk_config["llj2"][0], gain)
             self.moveJointByAngle(
                 "rlj3",
                 self.walk_config["rlj3"][1], 
@@ -1055,14 +1021,14 @@ class NaoRobot(object):
                 "llj6", 
                 self.walk_config["llj6"][1], 
                 gain)
-            self.moveJointByAngle("raj1", self.walk_config["raj1"][1], gain)
-            self.moveJointByAngle("laj1", self.walk_config["laj1"][1], gain)
-            self.moveJointByAngle("raj2", self.walk_config["raj2"][1], gain)
-            self.moveJointByAngle("laj2", self.walk_config["laj2"][1], gain)
-            self.moveJointByAngle("raj3", self.walk_config["raj3"][1], gain)
-            self.moveJointByAngle("laj3", self.walk_config["laj3"][1], gain)
-            self.moveJointByAngle("raj4", self.walk_config["raj4"][1], gain)
-            self.moveJointByAngle("laj4", self.walk_config["laj4"][1], gain)
+            # self.moveJointByAngle("raj1", self.walk_config["raj1"][1], gain)
+            # self.moveJointByAngle("laj1", self.walk_config["laj1"][1], gain)
+            # self.moveJointByAngle("raj2", self.walk_config["raj2"][1], gain)
+            # self.moveJointByAngle("laj2", self.walk_config["laj2"][1], gain)
+            # self.moveJointByAngle("raj3", self.walk_config["raj3"][1], gain)
+            # self.moveJointByAngle("laj3", self.walk_config["laj3"][1], gain)
+            # self.moveJointByAngle("raj4", self.walk_config["raj4"][1], gain)
+            # self.moveJointByAngle("laj4", self.walk_config["laj4"][1], gain)
 
                 
 

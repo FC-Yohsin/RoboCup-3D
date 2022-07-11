@@ -1,13 +1,7 @@
-__author__ = 'king'
-
-#! /usr/bin/env python3
 import threading
-
 from agent import *
-from action import *
-from think import *
-
-
+from agent.action import *
+from agent.think import *
 
 
 if __name__ == '__main__':
@@ -29,5 +23,4 @@ if __name__ == '__main__':
              "Player9":NaoRobot(9,'lamour','localhost',3100,Naomodel["Type_3"], startCoordinates=[-6.5, -3.0, 0]),
              "Player10":NaoRobot(10,'lamour','localhost',3100,Naomodel["Type_3"], startCoordinates=[-6.5, 0.0, 0]),
              "Player11":NaoRobot(11,'lamour','localhost',3100,Naomodel["Type_3"], startCoordinates=[-11.5, 0.0, 0])
-             }
-            #不知道为什么在一个文件里初始化不能全部上场，但通过两个脚本文件便可以将１１个搞定,正好可以把攻防分开
+            }

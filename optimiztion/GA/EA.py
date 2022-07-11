@@ -9,7 +9,7 @@ from enum import Enum
 import random
 import constants
 from agent import *
-from action import *
+from agent.action import *
 import time
 import random
 

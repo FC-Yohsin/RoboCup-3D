@@ -1,5 +1,3 @@
-
-
 class GameState(object):
     """Store game state information"""
 

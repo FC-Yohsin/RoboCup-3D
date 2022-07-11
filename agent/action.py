@@ -1,11 +1,7 @@
-#!usr/bin/env python3
-
-import imp
-from agent import NaoRobot
+from agent.agent import NaoRobot
 from constants import hjMax, hjMin
 from world import *
 import numpy as np
-
 
 def TravesalAngleToFile(JointAngelName='',Step = 1):
     f = open(JointAngelName, "a")
@@ -38,18 +34,6 @@ def FromFileToAngle(JointAngelName= ''):
 TravesalAngleToFile('llj3',1)
 
 FromFileToAngle('llj3')
-
-
-class Localizer(object):
-    def __init__(self):
-        pass
-
-# hj = {
-#     'hj1':{'angle':30},
-#     'hj2':{'percent':20}
-
-# }
-
 
 
 class Action(NaoRobot):

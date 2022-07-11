@@ -1,14 +1,5 @@
-__author__ = 'king'
-"""
-一个想法：混合shell编程，直接读取rcssserver目录下的naosoccersim.rb然后正则分析进来，这样应该说更具有仿真性，
-更像一个人获取到世界一样，而不是每次都要自己设置，这不像一个人
-"""
-
 from agent import *
-# import numpy as np
-# from enum import Enum
 import math
-#有的是从一个配置文件读取，有的是从消息中获取
 
 NaoSoccerSimParam = {
             'AgentRadius':0.4,

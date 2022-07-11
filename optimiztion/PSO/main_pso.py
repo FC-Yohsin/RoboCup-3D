@@ -8,7 +8,7 @@ from configs import *
 import random, math
 # import constants
 from agent import *
-from action import *
+from agent.action import *
 
 w = 0.3 # constant inertia weight (how much to previous velocity)
 c1 = 0.1 # cognative const weigh theant

@@ -1,5 +1,5 @@
 from agent import *
-from action import *
+from agent.action import *
 from think import *
 
 class Nao２(NaoRobot):                    #faster ankle-pitch and slower ankle-roll speed Nao

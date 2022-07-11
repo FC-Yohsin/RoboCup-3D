@@ -1,5 +1,5 @@
 from agent import *
-from action import *
+from agent.action import *
 from think import *
 
 class Nao4(NaoRobot):                    # Nao toe

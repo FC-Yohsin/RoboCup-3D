@@ -1,5 +1,5 @@
 from agent import *
-from action import *
+from agent.action import *
 from think import *
 
 class Nao3(NaoRobot):                    #longer legs and arms + wider hip Nao

@@ -1,62 +1,10 @@
 #!usr/bin/env python3
 
-from Agent import NaoRobot
-from World import *
+import imp
+from agent import NaoRobot
+from constants import hjMax, hjMin
+from world import *
 import numpy as np
-
-
-
-#所有动作命名规范为，大写字母开头，正常动作单词首字母大写
-# import numpy as np
-# import matplotlib.pyplot as plt
-# import mpl_toolkits.mplot3d
-#  self.msched.append([function,{dictionary负责传递参数给函数}])
-
-
-hjMax = {'hj1': 120.0,
-         'hj2': 45.0,
-         'raj1': 120.0,
-         'raj2': 1.0,
-         'raj3': 120.0,
-         'raj4': 90.0,
-         'laj1': 120.0,
-         'laj2': 95.0,
-         'laj3': 120.0,
-         'laj4': 1.0,
-         'rlj1': 1.0,
-         'rlj2': 25.0,
-         'rlj3': 100.0,
-         'rlj4': 1.0,
-         'rlj5': 75.0,
-         'rlj6': 45.0,
-         'llj1': 1.0,
-         'llj2': 45.0,
-         'llj3': 100.0,
-         'llj4': 1.0,
-         'llj5': 75.0,
-         'llj6': 25.0, }
-hjMin = {'hj1': -120.0,
-         'hj2': -45.0,
-         'raj1': -120.0,
-         'raj2': -95.0,
-         'raj3': -120.0,
-         'raj4': -1.0,
-         'laj1': -120.0,
-         'laj2': -1.0,
-         'laj3': -120.0,
-         'laj4': -90.0,
-         'rlj1': -90.0,
-         'rlj2': -45.0,
-         'rlj3': -25.0,
-         'rlj4': -130.0,
-         'rlj5': -45.0,
-         'rlj6': -25.0,
-         'llj1': -90.0,
-         'llj2': -25.0,
-         'llj3': -25.0,
-         'llj4': -130.0,
-         'llj5': -45.0,
-         'llj6': -45.0, }
 
 
 def TravesalAngleToFile(JointAngelName='',Step = 1):

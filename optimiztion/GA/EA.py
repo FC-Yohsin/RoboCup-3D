@@ -8,8 +8,8 @@ from selection_functions import SelectionFunctions
 from enum import Enum
 import random
 import constants
-from Agent import *
-from Action import *
+from agent import *
+from action import *
 import time
 import random
 

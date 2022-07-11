@@ -4,7 +4,7 @@ __author__ = 'king'
 更像一个人获取到世界一样，而不是每次都要自己设置，这不像一个人
 """
 
-from Agent import *
+from agent import *
 # import numpy as np
 # from enum import Enum
 import math

@@ -1,6 +1,6 @@
-from Agent import *
-from Action import *
-from Think import *
+from agent import *
+from action import *
+from think import *
 
 class Nao２(NaoRobot):                    #faster ankle-pitch and slower ankle-roll speed Nao
     def __init__(self,agetID,teamname,startCoordinates=[]):

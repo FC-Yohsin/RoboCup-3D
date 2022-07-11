@@ -1,9 +1,9 @@
 from debugpy import configure
-from Agent import *
-from Action import *
+from agent import *
+from action import *
 import time
 import random
 import matplotlib
 
 if __name__ == '__main__':
-    agent = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-5.5,0.9,0],debugLevel=0)
+    agent = NaoRobot(10,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-5.5,0.9,0],debugLevel=0)

@@ -1,3 +1,5 @@
+CYCLE_LENGTH = 0.02 # cycle length in seconds
+
 hjMax  = {
             'hj1' :  120.0,
             'hj2' :   45.0,

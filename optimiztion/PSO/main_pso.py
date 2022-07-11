@@ -7,8 +7,8 @@ import pickle
 from configs import *
 import random, math
 # import constants
-from Agent import *
-from Action import *
+from agent import *
+from action import *
 
 w = 0.3 # constant inertia weight (how much to previous velocity)
 c1 = 0.1 # cognative const weigh theant

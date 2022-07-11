@@ -1,4 +1,4 @@
-from Agent import *
+from agent import *
 from enum import Enum
 
 

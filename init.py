@@ -3,9 +3,9 @@ __author__ = 'king'
 #! /usr/bin/env python3
 import threading
 
-from Agent import *
-from Action import *
-from Think import *
+from agent import *
+from action import *
+from think import *
 
 
 

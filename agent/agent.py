@@ -1,12 +1,14 @@
 from cgitb import reset
 import time, math
 import threading
+from logger import logger
 import numpy as np
 from constants import CYCLE_LENGTH
 from pns import PNS
 from agent.movement_scheduler import MovementScheduler
 from game_state import GameState
 from agent.sensors import Gyroscope, Accelerometer, Vision, ForceResistanceSensor
+from roboviz_drawing import RobovizDrawing
 from world import *
 
 
@@ -252,6 +254,7 @@ class NaoRobot(object):
         self.is_fallen = False
         self.penalty = 0
         self.fallen_count = 0
+        self.roboviz = RobovizDrawing()
 
         self.startCoordinates = startCoordinates
 
@@ -291,10 +294,48 @@ class NaoRobot(object):
         self.alive = True
         startSkippingNumber = 10
         # print(self.perceive())
-
         iteration         = -1
         skippedIterations =  0
+        
+        self.roboviz.addAnnotation(
+                text="Annotations faaz TEXT!!",
+                position=(-5.5,0.9,2.0),
+                color=(200,255,255),
+                setName="Annotation.8",
+            )
+        
+        self.roboviz.drawCircle(
+            center=(-5.0,5.0),
+            radius=10.0,
+            thickness=1.0,
+            color=(255,0,0),
+            setName="Circle.1",
+        )
+        
+        self.roboviz.drawCircle(
+            center=(-5.0,5.0),
+            radius=6.0,
+            thickness=7.0,
+            color=(255,213,10),
+            setName="Circle.2",
+        )
+        
+        self.roboviz.drawLine(
+            pointA=(-5.0,5.0,1.0),
+            pointB=(-5.0,10.0,2.0),
+            thickness=2.0,
+            color=(255,255,0),
+            setName="Line.1",
+        )
+        
+        self.roboviz.clearAgentAnnotation(agentNum=10)
+        self.roboviz.addAgentAnnotation(
+            agentNum=10,
+            text="This is a agent annotation test",
+        )
+        
         while self.alive:
+            
             iteration += 1
             self.counter += 1
 #             if self.check_sync() >= startSkippingNumber:
@@ -304,17 +345,19 @@ class NaoRobot(object):
 #                     iteration         += 1
 #                     skippedIterations += 1 
 
+            
+            
             self.perceive()
             self.think()
 
             if iteration * CYCLE_LENGTH % 3.0 == 0:
 #                print("Robot {} lags {} cycles behind after {} iterations".format(self.agentID, self.check_sync(), iteration+1))
-                print("gametime - realtime: {:.5f}".format(self.gamestate.get_gametime() - time.time()))
+                logger.info("gametime - realtime: {:.5f}".format(self.gamestate.get_gametime() - time.time()))
 
 
         # report statistics
         iterations = iteration + 1
-        print("Robot {} lived for {:.1f} seconds,\n\ti.e. {} iterations, {} of which have been skipped ({:.2f}%).".format(self.agentID, time.time()-self.realstarttime, iterations, skippedIterations, 100.0*skippedIterations/iterations))
+        logger.info("Robot {} lived for {:.1f} seconds,\n\ti.e. {} iterations, {} of which have been skipped ({:.2f}%).".format(self.agentID, time.time()-self.realstarttime, iterations, skippedIterations, 100.0*skippedIterations/iterations))
 
 
 # ==================================== #
@@ -366,17 +409,17 @@ class NaoRobot(object):
 
         if current_pos[0] < self.startCoordinates[0]:
             score = score * -1
-        print("Score 01: {}".format(score))
+        logger.info("Score 01: {}".format(score))
         if self.is_fallen:
             score = score - (100*self.penalty)
-        print("Score 02: {}".format(score))
+        logger.info("Score 02: {}".format(score))
         straight_line_error = abs(self.get_position()[1]-self.startCoordinates[1])
 
         score = score - (straight_line_error * 10)
         # print(self.visible_flags)
         # if "F1R" not in self.visi ble_flags and "F2R" not in self.visible_flags:
         #     distance_traveled = distance_traveled - 5
-        print("Score 03: {}".format(score))
+        logger.info("Score 03: {}".format(score))
         return score
 
 # ==================================== #
@@ -777,8 +820,8 @@ class NaoRobot(object):
             # unknown perceptor
             else:
                 if self.debugLevel >= 10:
-                    print("DEBUG: unknown perceptor: {}".format(perceptor[0]))
-                    print(perceptor)
+                    logger.warning("DEBUG: unknown perceptor: {}".format(perceptor[0]))
+                    logger.warning(perceptor)
 
 
         # title = [y[0] for y in perceptors]

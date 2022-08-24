@@ -297,38 +297,38 @@ class NaoRobot(object):
         iteration         = -1
         skippedIterations =  0
         
-        self.roboviz.addAnnotation(
-                text="Annotations faaz TEXT!!",
-                position=(-5.5,0.9,2.0),
-                color=(200,255,255),
-                setName="Annotation.8",
-            )
+        # self.roboviz.addAnnotation(
+        #         text="Annotations faaz TEXT!!",
+        #         position=(-5.5,0.9,2.0),
+        #         color=(200,255,255),
+        #         setName="Annotation.8",
+        #     )
         
-        self.roboviz.drawCircle(
-            center=(-5.0,5.0),
-            radius=10.0,
-            thickness=1.0,
-            color=(255,0,0),
-            setName="Circle.1",
-        )
+        # self.roboviz.drawCircle(
+        #     center=(-5.0,5.0),
+        #     radius=10.0,
+        #     thickness=1.0,
+        #     color=(255,0,0),
+        #     setName="Circle.1",
+        # )
         
-        self.roboviz.drawCircle(
-            center=(-5.0,5.0),
-            radius=6.0,
-            thickness=7.0,
-            color=(255,213,10),
-            setName="Circle.2",
-        )
+        # self.roboviz.drawCircle(
+        #     center=(-5.0,5.0),
+        #     radius=6.0,
+        #     thickness=7.0,
+        #     color=(255,213,10),
+        #     setName="Circle.2",
+        # )
         
-        self.roboviz.drawLine(
-            pointA=(-5.0,5.0,1.0),
-            pointB=(-5.0,10.0,2.0),
-            thickness=2.0,
-            color=(255,255,0),
-            setName="Line.1",
-        )
+        # self.roboviz.drawLine(
+        #     pointA=(-5.0,5.0,1.0),
+        #     pointB=(-5.0,10.0,2.0),
+        #     thickness=2.0,
+        #     color=(255,255,0),
+        #     setName="Line.1",
+        # )
         
-        self.roboviz.clearAgentAnnotation(agentNum=10)
+        # self.roboviz.clearAgentAnnotation(agentNum=10)
         self.roboviz.addAgentAnnotation(
             agentNum=10,
             text="This is a agent annotation test",

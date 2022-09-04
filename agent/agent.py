@@ -17,7 +17,7 @@ class NaoRobot(object):
     机器人的实现"""
 
     def __init__(self, agentID, teamname, host='localhost', port=3100, model='', debugLevel=0,
-            startCoordinates=[-0.5, 0, 0]): 
+            startCoordinates=[-0.5, 0, 0], syncMode=False): 
 
         self.agentID       = agentID
         self.teamname      = teamname
@@ -259,7 +259,7 @@ class NaoRobot(object):
         self.startCoordinates = startCoordinates
 
         self.pns = PNS(self.agentID, self.teamname,
-                host=self.host, port=self.port, model=self.model, debugLevel=self.debugLevel)
+                host=self.host, port=self.port, model=self.model, debugLevel=self.debugLevel, syncMode=syncMode)
         self.perceive()
         self.pns.beam_effector(startCoordinates[0], startCoordinates[1], startCoordinates[2])
         
@@ -297,8 +297,15 @@ class NaoRobot(object):
         iteration         = -1
         skippedIterations =  0
         
+        
+        # self.roboviz.addAgentAnnotation(
+        #     text="Hello World!",
+        #     agentNum=10,
+        #     color=(0,0,0)
+        # )
+        
         # self.roboviz.addAnnotation(
-        #         text="Annotations faaz TEXT!!",
+        #         text="TEXT!!",
         #         position=(-5.5,0.9,2.0),
         #         color=(200,255,255),
         #         setName="Annotation.8",
@@ -329,21 +336,21 @@ class NaoRobot(object):
         # )
         
         # self.roboviz.clearAgentAnnotation(agentNum=10)
-        self.roboviz.addAgentAnnotation(
-            agentNum=10,
-            text="This is a agent annotation test",
-        )
+        # self.roboviz.addAgentAnnotation(
+        #     agentNum=10,
+        #     text="This is a agent annotation test",
+        # )
         
         while self.alive:
             
             iteration += 1
             self.counter += 1
-#             if self.check_sync() >= startSkippingNumber:
-#                 while self.check_sync() > 2:
-# #                    print(self.check_sync())
-#                     self.peself.is_fallenfrom another perc: {}".format(self.counter))
-#                     iteration         += 1
-#                     skippedIterations += 1 
+            # if self.check_sync() >= startSkippingNumber:
+            #     while self.check_sync() > 2:
+            #         # print(self.check_sync())
+            #         # self.peself.is_fallenfrom another perc: {}".format(self.counter))
+            #         iteration         += 1
+            #         skippedIterations += 1 
 
             
             
@@ -351,7 +358,7 @@ class NaoRobot(object):
             self.think()
 
             if iteration * CYCLE_LENGTH % 3.0 == 0:
-#                print("Robot {} lags {} cycles behind after {} iterations".format(self.agentID, self.check_sync(), iteration+1))
+                logger.info("Robot {} lags {} cycles behind after {} iterations".format(self.agentID, self.check_sync(), iteration+1))
                 logger.info("gametime - realtime: {:.5f}".format(self.gamestate.get_gametime() - time.time()))
 
 
@@ -427,112 +434,116 @@ class NaoRobot(object):
     def think(self):
         if self.counter <= 80:
             self.stand()
+        elif self.counter <= 120:
+            self.simpleWalk()
+        else:
+            self.counter = 80
 
 # ==================================== #
-    def simpleWalk(self):
-        gain = self.walk_gain
-        if self.counter > 80 and self.counter <= 104:
+    # def simpleWalk(self):
+    #     gain = self.walk_gain
+    #     if self.counter > 80 and self.counter <= 104:
 
-            self.moveJointByAngle(
-                "rlj1",
-                self.walk_config["rlj1"][0], 
-                gain)
-            self.moveJointByAngle(
-                "llj1",
-                self.walk_config["llj1"][0], 
-                gain)
-            # self.moveJointByAngle("rlj2", self.walk_config["rlj2"][0], gain)
-            # self.moveJointByAngle("llj2", self.walk_config["llj2"][0], gain)
-            self.moveJointByAngle(
-                "rlj3",
-                self.walk_config["rlj3"][0], 
-                gain)
-            self.moveJointByAngle(
-                "rlj4",
-                self.walk_config["rlj4"][0], 
-                gain)
-            self.moveJointByAngle(
-                "rlj5",
-                self.walk_config["rlj5"][0], 
-                gain)
+    #         self.moveJointByAngle(
+    #             "rlj1",
+    #             self.walk_config["rlj1"][0], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "llj1",
+    #             self.walk_config["llj1"][0], 
+    #             gain)
+    #         # self.moveJointByAngle("rlj2", self.walk_config["rlj2"][0], gain)
+    #         # self.moveJointByAngle("llj2", self.walk_config["llj2"][0], gain)
+    #         self.moveJointByAngle(
+    #             "rlj3",
+    #             self.walk_config["rlj3"][0], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "rlj4",
+    #             self.walk_config["rlj4"][0], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "rlj5",
+    #             self.walk_config["rlj5"][0], 
+    #             gain)
 
-            self.moveJointByAngle(
-                "llj3",
-                self.walk_config["llj3"][0], 
-                gain)
-            self.moveJointByAngle(
-                "llj4",
-                self.walk_config["llj4"][0], 
-                gain)
-            self.moveJointByAngle(
-                "llj5",
-                self.walk_config["llj5"][0], 
-                gain)
+    #         self.moveJointByAngle(
+    #             "llj3",
+    #             self.walk_config["llj3"][0], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "llj4",
+    #             self.walk_config["llj4"][0], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "llj5",
+    #             self.walk_config["llj5"][0], 
+    #             gain)
 
-            self.moveJointByAngle(
-                "rlj6", 
-                self.walk_config["rlj6"][0], 
-                gain)
-            self.moveJointByAngle(
-                "llj6", 
-                self.walk_config["llj6"][0], 
-                gain)
-            # self.moveJointByAngle("raj1", self.walk_config["raj1"][0], gain)
-            # self.moveJointByAngle("laj1", self.walk_config["laj1"][0], gain)
-            # self.moveJointByAngle("raj2", self.walk_config["raj2"][0], gain)
-            # self.moveJointByAngle("laj2", self.walk_config["laj2"][0], gain)
-            # self.moveJointByAngle("raj3", self.walk_config["raj3"][0], gain)
-            # self.moveJointByAngle("laj3", self.walk_config["laj3"][0], gain)
-            # self.moveJointByAngle("raj4", self.walk_config["raj4"][0], gain)
-            # self.moveJointByAngle("laj4", self.walk_config["laj4"][0], gain)
+    #         self.moveJointByAngle(
+    #             "rlj6", 
+    #             self.walk_config["rlj6"][0], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "llj6", 
+    #             self.walk_config["llj6"][0], 
+    #             gain)
+    #         # self.moveJointByAngle("raj1", self.walk_config["raj1"][0], gain)
+    #         # self.moveJointByAngle("laj1", self.walk_config["laj1"][0], gain)
+    #         # self.moveJointByAngle("raj2", self.walk_config["raj2"][0], gain)
+    #         # self.moveJointByAngle("laj2", self.walk_config["laj2"][0], gain)
+    #         # self.moveJointByAngle("raj3", self.walk_config["raj3"][0], gain)
+    #         # self.moveJointByAngle("laj3", self.walk_config["laj3"][0], gain)
+    #         # self.moveJointByAngle("raj4", self.walk_config["raj4"][0], gain)
+    #         # self.moveJointByAngle("laj4", self.walk_config["laj4"][0], gain)
 
 
-        if self.counter > 95 and self.counter <= 120:
+    #     if self.counter > 95 and self.counter <= 120:
 
-            self.moveJointByAngle(
-                "rlj1",
-                self.walk_config["rlj1"][1], 
-                gain)
-            self.moveJointByAngle(
-                "llj1",
-                self.walk_config["llj1"][1], 
-                gain)
-            # self.moveJointByAngle("rlj2", self.walk_config["rlj2"][0], gain)
-            # self.moveJointByAngle("llj2", self.walk_config["llj2"][0], gain)
-            self.moveJointByAngle(
-                "rlj3",
-                self.walk_config["rlj3"][1], 
-                gain)
-            self.moveJointByAngle(
-                "rlj4",
-                self.walk_config["rlj4"][1], 
-                gain)
-            self.moveJointByAngle(
-                "rlj5",
-                self.walk_config["rlj5"][1], 
-                gain)
+    #         self.moveJointByAngle(
+    #             "rlj1",
+    #             self.walk_config["rlj1"][1], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "llj1",
+    #             self.walk_config["llj1"][1], 
+    #             gain)
+    #         # self.moveJointByAngle("rlj2", self.walk_config["rlj2"][0], gain)
+    #         # self.moveJointByAngle("llj2", self.walk_config["llj2"][0], gain)
+    #         self.moveJointByAngle(
+    #             "rlj3",
+    #             self.walk_config["rlj3"][1], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "rlj4",
+    #             self.walk_config["rlj4"][1], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "rlj5",
+    #             self.walk_config["rlj5"][1], 
+    #             gain)
 
-            self.moveJointByAngle(
-                "llj3",
-                self.walk_config["llj3"][1], 
-                gain)
-            self.moveJointByAngle(
-                "llj4",
-                self.walk_config["llj4"][1], 
-                gain)
-            self.moveJointByAngle(
-                "llj5",
-                self.walk_config["llj5"][1], 
-                gain)
+    #         self.moveJointByAngle(
+    #             "llj3",
+    #             self.walk_config["llj3"][1], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "llj4",
+    #             self.walk_config["llj4"][1], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "llj5",
+    #             self.walk_config["llj5"][1], 
+    #             gain)
 
-            self.moveJointByAngle(
-                "rlj6", 
-                self.walk_config["rlj6"][1], 
-                gain)
-            self.moveJointByAngle(
-                "llj6", 
-                self.walk_config["llj6"][1], 
-                gain)
+    #         self.moveJointByAngle(
+    #             "rlj6", 
+    #             self.walk_config["rlj6"][1], 
+    #             gain)
+    #         self.moveJointByAngle(
+    #             "llj6", 
+    #             self.walk_config["llj6"][1], 
+    #             gain)
             # self.moveJointByAngle("raj1", self.walk_config["raj1"][1], gain)
             # self.moveJointByAngle("laj1", self.walk_config["laj1"][1], gain)
             # self.moveJointByAngle("raj2", self.walk_config["raj2"][1], gain)
@@ -545,40 +556,40 @@ class NaoRobot(object):
                 
 
 
-    # def simpleWalk(self):
-    #     gain = 4
-    #     if self.counter > 80 and self.counter <= 104:
+    def simpleWalk(self):
+        gain = 4
+        if self.counter > 80 and self.counter <= 104:
 
-    #         self.moveJointByAngle("rlj1",-12, gain)
-    #         self.moveJointByAngle("llj1",-11, gain)
+            self.moveJointByAngle("rlj1",-12, gain)
+            self.moveJointByAngle("llj1",-11, gain)
 
-    #         self.moveJointByAngle("rlj3",40.4, gain)
-    #         self.moveJointByAngle("rlj4",-55, gain)
-    #         self.moveJointByAngle("rlj5",13, gain)
+            self.moveJointByAngle("rlj3",40.4, gain)
+            self.moveJointByAngle("rlj4",-55, gain)
+            self.moveJointByAngle("rlj5",13, gain)
 
-    #         self.moveJointByAngle("llj3",15, gain)
-    #         self.moveJointByAngle("llj4",-45, gain)
-    #         self.moveJointByAngle("llj5",30, gain)
+            self.moveJointByAngle("llj3",15, gain)
+            self.moveJointByAngle("llj4",-45, gain)
+            self.moveJointByAngle("llj5",30, gain)
 
-    #         self.moveJointByAngle("rlj6", -4, gain)
-    #         self.moveJointByAngle("llj6", -1, gain)
+            self.moveJointByAngle("rlj6", -4, gain)
+            self.moveJointByAngle("llj6", -1, gain)
 
 
-    #     if self.counter > 95 and self.counter <= 120:
+        if self.counter > 95 and self.counter <= 120:
 
-    #         self.moveJointByAngle("rlj1",-11, gain)
-    #         self.moveJointByAngle("llj1",-12, gain)
+            self.moveJointByAngle("rlj1",-11, gain)
+            self.moveJointByAngle("llj1",-12, gain)
 
-    #         self.moveJointByAngle("llj3",40.4, gain)
-    #         self.moveJointByAngle("llj4",-55, gain)
-    #         self.moveJointByAngle("llj5",13, gain)
+            self.moveJointByAngle("llj3",40.4, gain)
+            self.moveJointByAngle("llj4",-55, gain)
+            self.moveJointByAngle("llj5",13, gain)
 
-    #         self.moveJointByAngle("rlj3",15, gain)
-    #         self.moveJointByAngle("rlj4",-45, gain)
-    #         self.moveJointByAngle("rlj5",30, gain)
+            self.moveJointByAngle("rlj3",15, gain)
+            self.moveJointByAngle("rlj4",-45, gain)
+            self.moveJointByAngle("rlj5",30, gain)
 
-    #         self.moveJointByAngle("rlj6", 1, gain)
-    #         self.moveJointByAngle("llj6", 4, gain)
+            self.moveJointByAngle("rlj6", 1, gain)
+            self.moveJointByAngle("llj6", 4, gain)
 
 
 
@@ -693,6 +704,7 @@ class NaoRobot(object):
 
 #        start = time.time()
         perceptors = self.pns.receive_perceptors()
+        # print(perceptors)
 #        print("receive_perceptors() took {:.8f} sec.".format(time.time()-start))
         # if self.counter % 3 == 0:
         #     self.visible_flags = []
@@ -706,16 +718,16 @@ class NaoRobot(object):
             if perceptor[0] == 'time':
                 self.gamestate.set_time(perceptor[1][1])
                 if self.realstarttime == None:
-                    self.realstarttime = time.time()                #真时的时间
-                    self.simstarttime  = self.gamestate.get_time()  #仿真服务器的时间
+                    self.realstarttime = time.time()               
+                    self.simstarttime  = self.gamestate.get_time()  
                 if skip:
                     break
 
             # game state
             elif perceptor[0] == 'GS':
                 for field in perceptor[1:]:
-                    if field[0] == 'sl':                            #我是左边开球
-                        self.gamestate.set_scoreLeft(field[1])      #我是右边开球
+                    if field[0] == 'sl':                            
+                        self.gamestate.set_scoreLeft(field[1])      
                     elif field[0] == 'sr':
                         self.gamestate.set_scoreRight(field[1])
                     elif field[0] == 't':

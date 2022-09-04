@@ -12,7 +12,7 @@ class PNS(object):
     """
     
     def __init__(self, agentID, teamname, host='localhost', port=3100,
-            model='', debugLevel=10):
+            model='', debugLevel=10, syncMode=False):
 
         """='rsg/agent/nao/nao.rsg'
         other model:(scene rsg/agent/nao/nao_hetero.rsg 0)
@@ -28,7 +28,8 @@ class PNS(object):
         self.port       = port
         self.model      = model
         self.debugLevel = debugLevel
-
+        self.syncMode = syncMode
+        
         # create socket and connect to simulation server
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
@@ -47,6 +48,10 @@ class PNS(object):
         The length prefix is a 32 bit unsigned integer in network order
         """
 
+        # if syncMode is ON, append (sync) to the end
+        if self.syncMode:
+            message += "(syn)"
+        
         # report message
         if (self.debugLevel >= 10):
             logger.info("S:", message)
@@ -54,6 +59,7 @@ class PNS(object):
         # convert message to ASCII encoded byte string
         length   = len(message)
         bmessage = bytes(message, 'ASCII')
+        
 
         # send length of message
         lengthMessage = struct.pack("!I", length)

@@ -8,6 +8,8 @@ from configs import *
 import random, math
 # import constants
 from agent import *
+import time
+import os
 from agent.action import *
 
 w = 0.3 # constant inertia weight (how much to previous velocity)
@@ -22,18 +24,18 @@ bounds = [(hjMin[joint], hjMax[joint]) for joint in joints]
 # function we are attempting to optimize (minimize)
 def fitness(vector):
     subproces = subprocess.Popen(['gnome-terminal', '-e', 'rcssserver3d'], stdout=subprocess.PIPE)
-    time.sleep(3)
+    time.sleep(1)
     print("Starting to Evaluate Individual")
     agent = NaoRobot(8,'Test','localhost',3100,'rsg/agent/nao/nao.rsg',startCoordinates=[-12.0,0.0,0],debugLevel=0)
     agent.set_walk_config(congigure_vector(vector))
-    time.sleep(40)
+    time.sleep(5)
     print("Now Killing")
     score = agent.get_distance_fitness_score() * -1
     print("Distance Travelled: {}".format(score))
-    agent.die() 
-    time.sleep(3)
+    agent.die()
+    time.sleep(1)
     os.system("killall -9 rcssserver3d")
-    time.sleep(3)
+    time.sleep(1)
     return score
 
 class Particle:
@@ -179,8 +181,8 @@ PSO(fitness,
     num_particles=num_particles,
     num_iterations=num_iterations,
     population=swarm,
-    # global_best=best_vector,
-    # best_value=best_value
+    global_best=best_vector,
+    best_value=best_value
     )
 
 #--- END ---------------------------------------------------------------

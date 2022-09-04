@@ -1,5 +1,6 @@
 from cmath import log
 from distutils.command.build import build
+from time import strftime
 from pns import PNS
 from enum import Enum
 from logger import logger
@@ -119,16 +120,17 @@ class RobovizDrawing:
         self.__sendMessage(bytes(buffer), len(buffer))
         
     
-    def addAgentAnnotation(self, text: str, agentNum: int, opponent: bool=False, color: tuple=(255,255,255))->None:
+    def addAgentAnnotation(self, text: str, agentNum: str, opponent: bool=False, color: tuple=(255,255,255))->None:
         buffer = bytearray(0)
         
         self.__headerToBuffer(buffer, HeaderType.AGENT_ANNOTATION)
         
         # if not opponent:
-        buffer.append(agentNum - 1)
         # else:
         #     buffer.append(agentNum + 127)
-        
+
+        buffer.append(10)
+        # self.__strToBuffer(buffer, str(agentNum))
         self.__colorToBuffer(buffer, color)
         self.__strToBuffer(buffer, text)
         
@@ -139,6 +141,6 @@ class RobovizDrawing:
         buffer = bytearray(0)
         
         self.__headerToBuffer(buffer, HeaderType.CLEAR_ANNOTATION)
-        buffer.append(agentNum - 1)
+        buffer.append(agentNum)
         
         self.__sendMessage(bytes(buffer), len(buffer))
